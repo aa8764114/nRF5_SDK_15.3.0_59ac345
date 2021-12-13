@@ -1,0 +1,17 @@
+.idea
+.vscode
+*.o
+*.d
+*.hex
+*.in
+*.map
+*.bin
+*.out
+*.s
+*.ewp
+*.ewd
+*.icf
+*.cbp
+cmake-build-debug-gcc-arm-none-eabi
+git_version.h
+cmake-build-debug-arm-none-eabi
