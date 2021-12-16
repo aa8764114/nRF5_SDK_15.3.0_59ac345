@@ -57,7 +57,7 @@ NRF_LOG_MODULE_REGISTER();
 #define EVENT_HANDLER                   ss2sw_event_handler
 #define EVENT_BUFFER_CNT                (4)
 STATIC_ASSERT(IS_POWER_OF_TWO(EVENT_BUFFER_CNT));
-static ss2sw_event_t event_buffer[EVENT_BUFFER_CNT];
+//static ss2sw_event_t event_buffer[EVENT_BUFFER_CNT];
 static nrf_atomic_u32_t event_buffer_idx;
 
 static ss2sw_event_t event = {0};
@@ -93,8 +93,8 @@ static nrf_ppi_channel_t ppi_ch_on_rtc_adc;
 static nrf_ppi_channel_t ppi_ch_on_adc_calib;
 
 static nrf_saadc_value_t saadc_buffer[1];
-static nrf_saadc_channel_config_t adc_conf_battery;
-static saadc_configuration_e saadc_configuration;
+//static nrf_saadc_channel_config_t adc_conf_battery;
+//static saadc_configuration_e saadc_configuration;
 
 
 
@@ -747,11 +747,11 @@ static void calib_timer_handler(void * p_context)
     }
 }
 
-static void mswitch_gpio_change_handler(void * p_context)
-{
-    //switch_sensor_update_request();
-    app_sched_event_put(NULL, 0,ss2_wakeup_state_machine);
-}
+//static void mswitch_gpio_change_handler(void * p_context)
+//{
+//    //switch_sensor_update_request();
+//    app_sched_event_put(NULL, 0,ss2_wakeup_state_machine);
+//}
 
 static void msw_gpio_polling_state_handler(void * p_context)
 {    
@@ -875,7 +875,6 @@ static void init_gpio(void)
 
 static void init_rtc(void)
 {
-    ret_code_t err_code;
     uint32_t rtc_ms;
 
     nrf_rtc_prescaler_set(RTC_REG, RTC_PRESCALER);
@@ -1076,8 +1075,6 @@ void SAADC_IRQHandler(void)
     }
     else if (nrf_saadc_event_check(NRF_SAADC_EVENT_END))
     {
-        bool is_short;
-
         nrf_saadc_event_clear(NRF_SAADC_EVENT_END);
         
         if (actseq_exec == false)

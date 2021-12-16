@@ -22,7 +22,6 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/util/app_error_handler_gcc.c \
   $(SDK_ROOT)/components/libraries/util/app_error_weak.c \
   $(SDK_ROOT)/components/libraries/scheduler/app_scheduler.c \
-  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
   $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
   $(SDK_ROOT)/components/libraries/crc16/crc16.c \
   $(SDK_ROOT)/components/libraries/fds/fds.c \
@@ -87,15 +86,22 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ssm_libraries/fdsx.c \
   $(SDK_ROOT)/components/ssm_libraries/misc.c \
   $(SDK_ROOT)/components/ssm_libraries/base64.c \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
   $(SDK_ROOT)/components/libraries/bootloader/dfu/nrf_dfu_svci.c \
   $(SDK_ROOT)/components/libraries/bootloader/nrf_bootloader_info.c \
   $(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
-  $(SDK_ROOT)/components/libraries/fds \
-  $(SDK_ROOT)/components/libraries/fstorage \
-  $(SDK_ROOT)/components/libraries/crc16 \
+  $(SDK_ROOT)/components/ble_ssm2/security_layer.c \
+  $(SDK_ROOT)/components/ssm_mod_libraries/timer/app_timer.c \
+  $(SDK_ROOT)/components/ssm_mod_libraries/timer/experimental/app_timer2.c \
+  $(SDK_ROOT)/components/ssm_mod_libraries/ble_dfu/ble_dfu.c \
+  $(SDK_ROOT)/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.c \
+  $(SDK_ROOT)/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.c \
+#  $(SDK_ROOT)/components/libraries/timer/experimental/app_timer2.c \
+#  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
+#  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
+#  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
+#  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
+
+
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -153,7 +159,6 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/usbd/class/hid/mouse \
   $(SDK_ROOT)/components/libraries/low_power_pwm \
   $(SDK_ROOT)/components/nfc/ndef/conn_hand_parser/ble_oob_advdata_parser \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu \
   $(SDK_ROOT)/external/fprintf \
   $(SDK_ROOT)/components/libraries/svc \
   $(SDK_ROOT)/components/libraries/atomic \
@@ -173,7 +178,6 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/hardfault \
   $(SDK_ROOT)/components/ble/ble_services/ble_cscs \
   $(SDK_ROOT)/components/libraries/hci \
-  $(SDK_ROOT)/components/libraries/timer \
   $(SDK_ROOT)/components/softdevice/s140/headers \
   $(SDK_ROOT)/integration/nrfx \
   $(SDK_ROOT)/components/nfc/t4t_parser/tlv \
@@ -233,14 +237,15 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/ssm_boards \
   $(SDK_ROOT)/components/ssm_libraries \
   $(SDK_ROOT)/external/mbedtls/include/mbedtls \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu \
   $(SDK_ROOT)/components/libraries/bootloader/dfu \
   $(SDK_ROOT)/components/libraries/bootloader \
   $(SDK_ROOT)/components/ble/ble_advertising \
-  $(SDK_ROOT)/components/libraries/log \
-  $(SDK_ROOT)/components/libraries/fds \
-  $(SDK_ROOT)/components/libraries/fstorage \
-  $(SDK_ROOT)/components/libraries/crc16 \
+  $(SDK_ROOT)/components/libraries/timer/experimental \
+  $(SDK_ROOT)/components/ssm_mod_libraries/timer \
+  $(SDK_ROOT)/components/ssm_mod_libraries/ble_dfu \
+
+#  $(SDK_ROOT)/components/libraries/timer \
+#  $(SDK_ROOT)/components/ble/ble_services/ble_dfu \
 
 
 # Libraries common to all targets

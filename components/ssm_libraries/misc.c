@@ -32,8 +32,6 @@ void print_fds_stat(void)
 
 void byte_to_hex(uint8_t* p_out, uint8_t in)
 {
-    uint8_t bit_4;
-
     if ((in >> 4) > 9)
     {
         p_out[0] = 'A' + (in >> 4) - 10;
@@ -67,8 +65,10 @@ void hex_to_addr(char* const buf, uint8_t* addr)
     }
 }
 
-void fill_mac_addr_string(char* buf, uint8_t const * addr)
+void fill_mac_addr_string(char* buf2, uint8_t const * addr)
 {
+    uint8_t* buf;
+    buf = (uint8_t*)buf2;
     byte_to_hex(buf, addr[5]);
     buf[2] = ':';
     byte_to_hex(&buf[3], addr[4]);
@@ -92,9 +92,11 @@ char* mac_addr_string(uint8_t const * const addr)
     return &buf[0];
 }
 
-void hexdump_with_buf(uint8_t const * p_data, uint8_t const len, char* buf)
+void hexdump_with_buf(uint8_t const * p_data, uint8_t const len, char* buf2)
 {
-    static char shared_buf[SHARED_HEXDUMP_MAX_LEN * 2 + 1];
+    uint8_t * buf = (uint8_t *)buf2;
+
+    static uint8_t shared_buf[SHARED_HEXDUMP_MAX_LEN * 2 + 1];
     uint8_t i;
 
     if (!buf)
@@ -106,7 +108,6 @@ void hexdump_with_buf(uint8_t const * p_data, uint8_t const len, char* buf)
         }
         buf = shared_buf;
     }
-
     for (i = 0; i < len; i++)
     {
         byte_to_hex(&buf[2 * i], p_data[i]);

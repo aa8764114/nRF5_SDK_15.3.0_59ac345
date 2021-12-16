@@ -19,6 +19,8 @@
 #include "ecdh_p256.h"
 #include "watchdog.h"
 
+#include "security_layer.h"
+
 #define NRF_LOG_MODULE_NAME     BLE
 #define NRF_LOG_LEVEL           NRF_LOG_SEVERITY_INFO
 #include "nrf_log.h"
@@ -44,7 +46,6 @@ NRF_LOG_MODULE_REGISTER();
 
 #define ADV_MFG_DATA_LEN_UNREGISTERED   (3)
 #define ADV_MFG_DATA_LEN_REGISTERED     (15)
-
 
 #pragma pack(1)
 typedef struct adv_app_data_plaintext_s
@@ -205,8 +206,9 @@ static void ble_ssm2_registration_init(void)
          * Note we need to swap endianness here
          */
         uint8_t buf[32];
+        uint8_t Sesame2_key_pair[17] = "Sesame2_key_pair";
 
-        err_code = aes_cmac("Sesame2_key_pair", (uint8_t*)NRF_FICR->ER, 16, buf);
+        err_code = aes_cmac(Sesame2_key_pair, (uint8_t*)NRF_FICR->ER, 16, buf);
         APP_ERROR_CHECK(err_code);
         err_code = aes_cmac(buf, (uint8_t*)NRF_FICR->ER, 16, &buf[16]);
         APP_ERROR_CHECK(err_code);
@@ -443,17 +445,20 @@ static void ssm2_register(session_t* session)
 
     memset(&user, 0, sizeof(user));
     user.level = USER_LEVEL_OWNER;
-    err_code = aes_cmac(reg_key, "owner_key", strlen("owner_key"), user.key);
+    uint8_t owner_key[10] = "owner_key";
+    err_code = aes_cmac(reg_key, owner_key, strlen("owner_key"), user.key);
     APP_ERROR_CHECK(err_code);
     err_code = user_save(0, &user);
     APP_ERROR_CHECK(err_code);
 
     memset(&ssm2.reg, 0, sizeof(ssm2.reg));
-    err_code = aes_cmac(reg_key, "delegate_key", strlen("delegate_key"), &buf[sizeof(cmd->server_token)]);       // delegate_key_material
+    uint8_t delegate_key[13] = "delegate_key";
+    err_code = aes_cmac(reg_key, delegate_key, strlen("delegate_key"), &buf[sizeof(cmd->server_token)]);       // delegate_key_material
     APP_ERROR_CHECK(err_code);
     err_code = aes_cmac(ssm2.shared_secret  , &buf[sizeof(cmd->server_token)], 16, ssm2.reg.delegate_key);
     APP_ERROR_CHECK(err_code);
-    err_code = aes_cmac(reg_key, "adv_key", strlen("adv_key"), &buf[sizeof(cmd->server_token)+16]);                    // adv_key_material
+    uint8_t adv_key[8] = "adv_key";
+    err_code = aes_cmac(reg_key, adv_key, strlen("adv_key"), &buf[sizeof(cmd->server_token)+16]);                    // adv_key_material
     APP_ERROR_CHECK(err_code);
     err_code = aes_cmac(ssm2.shared_secret, &buf[sizeof(cmd->server_token)+16], 16, ssm2.reg.adv_key);
     APP_ERROR_CHECK(err_code);
@@ -688,7 +693,6 @@ static void handle_plaintext_command(session_t* session, session_status_e sessio
 
 static void handle_write(session_t* session, ble_gatts_evt_write_t const * write)
 {
-    ret_code_t err_code;
     ssm2_command_t cmd;
     uint8_t decrypt_buffer[128];
     session_status_e session_status = session_get_status(session);
@@ -1393,7 +1397,8 @@ void ble_ssm2_advertising_init(void)
 ret_code_t ble_ssm2_advertising_update(void)
 {
     ret_code_t err_code;
-    bool update = false;
+//    bool update = false;
+    bool update = true;
     uint8_t idx = ssm2.adv.buffer_idx ? 0 : 1;
     adv_buffer_t* p_buffer = &ssm2.adv.buffer[idx];
 
@@ -1486,11 +1491,14 @@ ret_code_t ble_ssm2_send_login_msg(session_t* session, ssm2_op_code_e op)
     STATIC_ASSERT(offsetof(login_msg_data_t, mech_setting_and_status) == 8);
 
     uint8_t buf[4 + offsetof(login_msg_data_t, mech_setting_and_status) + MAX_MECH_SETTING_LEN + MAX_MECH_STATUS_LEN] __ALIGN(4);
-    login_msg_data_t* data = (typeof(data)) (buf + 4);
-    uint16_t data_len = offsetof(typeof(*data), mech_setting_and_status) + ssm2.mech_setting_len + ssm2.mech_status_len;
+//    login_msg_data_t* data = (typeof(data)) (buf + 4);
+    login_msg_data_t* data = {0};
+//    uint16_t data_len = offsetof(typeof(*data), mech_setting_and_status) + ssm2.mech_setting_len + ssm2.mech_status_len;
+    uint16_t data_len = offsetof(login_msg_data_t, mech_setting_and_status) + ssm2.mech_setting_len + ssm2.mech_status_len;
 
     APP_ERROR_CHECK_BOOL((op == SSM2_OP_CODE_RESPONSE || op == SSM2_OP_CODE_PUBLISH));
     APP_ERROR_CHECK_BOOL((ssm2.mech_setting_len <= MAX_MECH_SETTING_LEN && ssm2.mech_status_len <= MAX_MECH_STATUS_LEN));
+
 
     data->system_time = app_timer_get_epoch_sec();
     data->fw_version = FW_VERSION;

@@ -146,51 +146,6 @@ __/__/__/__/__/__/components/ble/ble_advertising/ble_advertising.s:
 .PHONY : __/__/__/__/__/__/components/ble/ble_advertising/ble_advertising.s
 
 # target to build an object file
-__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.o:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.o
-.PHONY : __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.o
-
-# target to preprocess a source file
-__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.i:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.i
-.PHONY : __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.i
-
-# target to generate assembly for a file
-__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.s:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.s
-.PHONY : __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.s
-
-# target to build an object file
-__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.o:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.o
-.PHONY : __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.o
-
-# target to preprocess a source file
-__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.i:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.i
-.PHONY : __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.i
-
-# target to generate assembly for a file
-__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.s:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.s
-.PHONY : __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.s
-
-# target to build an object file
-__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.o:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.o
-.PHONY : __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.o
-
-# target to preprocess a source file
-__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.i:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.i
-.PHONY : __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.i
-
-# target to generate assembly for a file
-__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.s:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.s
-.PHONY : __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.s
-
-# target to build an object file
 __/__/__/__/__/__/components/ble/common/ble_advdata.o:
 	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble/common/ble_advdata.o
 .PHONY : __/__/__/__/__/__/components/ble/common/ble_advdata.o
@@ -474,6 +429,21 @@ __/__/__/__/__/__/components/ble_ssm2/ble_ssm2.i:
 __/__/__/__/__/__/components/ble_ssm2/ble_ssm2.s:
 	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble_ssm2/ble_ssm2.s
 .PHONY : __/__/__/__/__/__/components/ble_ssm2/ble_ssm2.s
+
+# target to build an object file
+__/__/__/__/__/__/components/ble_ssm2/security_layer.o:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble_ssm2/security_layer.o
+.PHONY : __/__/__/__/__/__/components/ble_ssm2/security_layer.o
+
+# target to preprocess a source file
+__/__/__/__/__/__/components/ble_ssm2/security_layer.i:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble_ssm2/security_layer.i
+.PHONY : __/__/__/__/__/__/components/ble_ssm2/security_layer.i
+
+# target to generate assembly for a file
+__/__/__/__/__/__/components/ble_ssm2/security_layer.s:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ble_ssm2/security_layer.s
+.PHONY : __/__/__/__/__/__/components/ble_ssm2/security_layer.s
 
 # target to build an object file
 __/__/__/__/__/__/components/boards/boards.o:
@@ -896,21 +866,6 @@ __/__/__/__/__/__/components/libraries/strerror/nrf_strerror.s:
 .PHONY : __/__/__/__/__/__/components/libraries/strerror/nrf_strerror.s
 
 # target to build an object file
-__/__/__/__/__/__/components/libraries/timer/app_timer.o:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/libraries/timer/app_timer.o
-.PHONY : __/__/__/__/__/__/components/libraries/timer/app_timer.o
-
-# target to preprocess a source file
-__/__/__/__/__/__/components/libraries/timer/app_timer.i:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/libraries/timer/app_timer.i
-.PHONY : __/__/__/__/__/__/components/libraries/timer/app_timer.i
-
-# target to generate assembly for a file
-__/__/__/__/__/__/components/libraries/timer/app_timer.s:
-	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/libraries/timer/app_timer.s
-.PHONY : __/__/__/__/__/__/components/libraries/timer/app_timer.s
-
-# target to build an object file
 __/__/__/__/__/__/components/libraries/util/app_error.o:
 	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/libraries/util/app_error.o
 .PHONY : __/__/__/__/__/__/components/libraries/util/app_error.o
@@ -1089,6 +1044,81 @@ __/__/__/__/__/__/components/ssm_libraries/misc.i:
 __/__/__/__/__/__/components/ssm_libraries/misc.s:
 	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_libraries/misc.s
 .PHONY : __/__/__/__/__/__/components/ssm_libraries/misc.s
+
+# target to build an object file
+__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.o:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.o
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.o
+
+# target to preprocess a source file
+__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.i:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.i
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.i
+
+# target to generate assembly for a file
+__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.s:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.s
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.s
+
+# target to build an object file
+__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.o:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.o
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.o
+
+# target to preprocess a source file
+__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.i:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.i
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.i
+
+# target to generate assembly for a file
+__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.s:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.s
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.s
+
+# target to build an object file
+__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.o:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.o
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.o
+
+# target to preprocess a source file
+__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.i:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.i
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.i
+
+# target to generate assembly for a file
+__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.s:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.s
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.s
+
+# target to build an object file
+__/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.o:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.o
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.o
+
+# target to preprocess a source file
+__/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.i:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.i
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.i
+
+# target to generate assembly for a file
+__/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.s:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.s
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.s
+
+# target to build an object file
+__/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.o:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.o
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.o
+
+# target to preprocess a source file
+__/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.i:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.i
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.i
+
+# target to generate assembly for a file
+__/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.s:
+	cd /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug && $(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/__/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.s
+.PHONY : __/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.s
 
 # target to build an object file
 __/__/__/__/__/__/external/fprintf/nrf_fprintf.o:
@@ -1342,15 +1372,6 @@ help:
 	@echo "... __/__/__/__/__/__/components/ble/ble_advertising/ble_advertising.o"
 	@echo "... __/__/__/__/__/__/components/ble/ble_advertising/ble_advertising.i"
 	@echo "... __/__/__/__/__/__/components/ble/ble_advertising/ble_advertising.s"
-	@echo "... __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.o"
-	@echo "... __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.i"
-	@echo "... __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu.s"
-	@echo "... __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.o"
-	@echo "... __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.i"
-	@echo "... __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_bonded.s"
-	@echo "... __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.o"
-	@echo "... __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.i"
-	@echo "... __/__/__/__/__/__/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.s"
 	@echo "... __/__/__/__/__/__/components/ble/common/ble_advdata.o"
 	@echo "... __/__/__/__/__/__/components/ble/common/ble_advdata.i"
 	@echo "... __/__/__/__/__/__/components/ble/common/ble_advdata.s"
@@ -1408,6 +1429,9 @@ help:
 	@echo "... __/__/__/__/__/__/components/ble_ssm2/ble_ssm2.o"
 	@echo "... __/__/__/__/__/__/components/ble_ssm2/ble_ssm2.i"
 	@echo "... __/__/__/__/__/__/components/ble_ssm2/ble_ssm2.s"
+	@echo "... __/__/__/__/__/__/components/ble_ssm2/security_layer.o"
+	@echo "... __/__/__/__/__/__/components/ble_ssm2/security_layer.i"
+	@echo "... __/__/__/__/__/__/components/ble_ssm2/security_layer.s"
 	@echo "... __/__/__/__/__/__/components/boards/boards.o"
 	@echo "... __/__/__/__/__/__/components/boards/boards.i"
 	@echo "... __/__/__/__/__/__/components/boards/boards.s"
@@ -1492,9 +1516,6 @@ help:
 	@echo "... __/__/__/__/__/__/components/libraries/strerror/nrf_strerror.o"
 	@echo "... __/__/__/__/__/__/components/libraries/strerror/nrf_strerror.i"
 	@echo "... __/__/__/__/__/__/components/libraries/strerror/nrf_strerror.s"
-	@echo "... __/__/__/__/__/__/components/libraries/timer/app_timer.o"
-	@echo "... __/__/__/__/__/__/components/libraries/timer/app_timer.i"
-	@echo "... __/__/__/__/__/__/components/libraries/timer/app_timer.s"
 	@echo "... __/__/__/__/__/__/components/libraries/util/app_error.o"
 	@echo "... __/__/__/__/__/__/components/libraries/util/app_error.i"
 	@echo "... __/__/__/__/__/__/components/libraries/util/app_error.s"
@@ -1531,6 +1552,21 @@ help:
 	@echo "... __/__/__/__/__/__/components/ssm_libraries/misc.o"
 	@echo "... __/__/__/__/__/__/components/ssm_libraries/misc.i"
 	@echo "... __/__/__/__/__/__/components/ssm_libraries/misc.s"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.o"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.i"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu.s"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.o"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.i"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.s"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.o"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.i"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.s"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.o"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.i"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/timer/app_timer.s"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.o"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.i"
+	@echo "... __/__/__/__/__/__/components/ssm_mod_libraries/timer/experimental/app_timer2.s"
 	@echo "... __/__/__/__/__/__/external/fprintf/nrf_fprintf.o"
 	@echo "... __/__/__/__/__/__/external/fprintf/nrf_fprintf.i"
 	@echo "... __/__/__/__/__/__/external/fprintf/nrf_fprintf.s"
