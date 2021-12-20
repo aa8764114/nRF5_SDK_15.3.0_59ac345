@@ -37,7 +37,7 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include "nrf52.h"
+//#include "nrf52.h"
 #include "app_timer.h"
 #include "nrf_atfifo.h"
 #include "nrf_sortlist.h"

@@ -93,6 +93,8 @@ typedef struct
     .cc_channel_count = NRF_RTC_CC_CHANNEL_COUNT(id),              \
 }
 
+#define APP_TIMER_V2_RTC1_ENABLED
+
 enum {
 #if defined(APP_TIMER_V2_RTC0_ENABLED)
     DRV_RTC_RTC0_INST_IDX,

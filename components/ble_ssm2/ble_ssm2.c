@@ -27,6 +27,9 @@
 NRF_LOG_MODULE_REGISTER();
 #include "nrf_log_ctrl.h"
 
+#include "session.h"
+#include "history.h"
+
 //#define TEST_ECDH_SHARE_SECRET_WITH_CERBERUS
 //#define TEST_ECC_TIME
 //#define TEST_AES_TIME

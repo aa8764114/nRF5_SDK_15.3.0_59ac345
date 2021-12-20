@@ -35,7 +35,6 @@ static void handle_drive_to_preset(ssm2_command_t const * cmd, uint8_t preset)
     ret_code_t err_code;
     ble_ssm2_event_t evt;
     cmd_result_e result;
-    history_type_e history_type;
 
     if (cmd->len != HISTORY_PAYLOAD_LEN_MAX)
     {
@@ -82,47 +81,6 @@ static void handle_drive_to_preset(ssm2_command_t const * cmd, uint8_t preset)
     NRF_LOG_DEBUG("[%s] session_tx_add_res()=%d", __func__, err_code);
 }
 
-static void handle_drive_stop(ssm2_command_t const * cmd)
-{
-    ret_code_t err_code;
-    ble_ssm2_event_t evt;
-    cmd_result_e result;
-    history_type_e history_type;
-
-    //if (cmd->len != HISTORY_PAYLOAD_LEN_MAX)
-    //{
-    //    result = CMD_RESULT_INVALID_FORMAT;
-    //}
-    //else
-    {
-        evt.type = BLE_SSM2_EVT_MECH_STOP;
-        err_code = ble_ssm2_event_handler(&evt);
-        switch (err_code)
-        {
-        //case NRF_SUCCESS:
-        //    err_code = history_add_with_ble_peer_ex(HISTORY_TYPE_BLE_POSITIONING, cmd->session->user_idx, cmd->session->device_id, cmd->data, cmd->len);
-        //    if (err_code == NRF_SUCCESS)
-        //    {
-        //        result = CMD_RESULT_SUCCESS;
-        //    }
-        //    else
-        //    {
-        //        result = CMD_RESULT_STORAGE_FAIL;
-        //    }
-        //    break;
-       case NRF_ERROR_NOT_SUPPORTED:
-            result = CMD_RESULT_NOT_SUPPORTED;
-            break;
-       default:
-            NRF_LOG_WARNING("[%s] ble_ssm2_event_handler()=%d", __func__, err_code);
-            result = CMD_RESULT_UNKNOWN;
-            break;
-        }
-    }
-
-    err_code = session_tx_add_res(cmd->session, cmd->op_item_code, result, 0, NULL);
-    NRF_LOG_DEBUG("[%s] session_tx_add_res()=%d", __func__, err_code);
-}
 
 static void handle_read_mech_status(ssm2_command_t const * cmd)
 {
@@ -359,7 +317,7 @@ static void handle_write_user(ssm2_command_t const * cmd)
 static void handle_read_user(ssm2_command_t const * cmd)
 {
     ret_code_t err_code;
-    cmd_result_e result;
+    cmd_result_e result = {0};
     typedef struct cmd_read_user_s
     {
         uint16_t    user_idx;
@@ -407,7 +365,7 @@ static void handle_read_user(ssm2_command_t const * cmd)
 static void handle_delete_user(ssm2_command_t const * cmd)
 {
     ret_code_t err_code;
-    cmd_result_e result;
+    cmd_result_e result = {0};
     typedef struct cmd_delete_user_s
     {
         uint8_t     server_sig[4];  // first 4 bytes AES-CMAC(delegate_key, session_token + server_nonce + user_idx)
@@ -635,7 +593,6 @@ static void handle_update_enable_dfu(ssm2_command_t const * cmd)
 {
     ret_code_t err_code;
     cmd_result_e result;
-    uint8_t     enabled;
 
     if (cmd->len == 1)
     {
@@ -727,7 +684,7 @@ static void handle_update_time_nosig(ssm2_command_t const * cmd)
 static void handle_sync_server_adv_kick(ssm2_command_t const * cmd)
 {
     ret_code_t err_code;
-    cmd_result_e result;
+    cmd_result_e result = {0};
 
     ble_ssm2_set_adv_boot_flag(0);
     ble_ssm2_advertising_update() == NRF_SUCCESS ? CMD_RESULT_SUCCESS : CMD_RESULT_UNKNOWN;
@@ -739,16 +696,16 @@ static void handle_sync_server_adv_kick(ssm2_command_t const * cmd)
 static void handle_read_version(ssm2_command_t const * cmd)
 {
     ret_code_t err_code;
-    uint32_t time = app_timer_get_epoch_sec();
     typedef struct read_version_rsp_s
     {
         uint32_t    timestamp;
         char        version_for_app[32];
     } read_version_rsp_t;
-    read_version_rsp_t rsp;
+    read_version_rsp_t rsp = {0};
 
-    rsp.timestamp = GIT_TIMESTAMP;
-    memcpy(rsp.version_for_app, VERSION_FOR_APP, sizeof(rsp.version_for_app));
+//    rsp.timestamp = GIT_TIMESTAMP;
+    rsp.timestamp = 20211220;
+//    memcpy(rsp.version_for_app, VERSION_FOR_APP, sizeof(rsp.version_for_app));
 
     err_code = session_tx_add_res(cmd->session, cmd->op_item_code, CMD_RESULT_SUCCESS, sizeof(rsp), &rsp);
     NRF_LOG_DEBUG("[%s] session_tx_add_res()=%d", __func__, err_code);
@@ -834,9 +791,7 @@ void handle_command(ssm2_command_t const * cmd)
     case OP_ITEM_ASYNC_UNLOCK:
         handle_drive_to_preset(cmd, ITEM_CODE(cmd->op_item_code) - ITEM_CODE(OP_ITEM_ASYNC_LOCK));
         break;
-    //case OP_ITEM_ASYNC_STOP:
-    //    handle_drive_stop(cmd);
-    //    break;
+
     case OP_ITEM_READ_MECH_STATUS:
         handle_read_mech_status(cmd);
         break;

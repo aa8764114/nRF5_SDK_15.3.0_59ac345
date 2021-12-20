@@ -163,7 +163,7 @@ typedef app_timer_t * app_timer_id_t;
     static const app_timer_id_t timer_id = &CONCAT_2(timer_id,_data)
 
 #else //APP_TIMER_V2
-typedef struct app_timer_t { uint32_t data[CEIL_DIV(APP_TIMER_NODE_SIZE, sizeof(uint32_t))]; } app_timer_t;
+typedef struct pp_timer_ta { uint32_t data[CEIL_DIV(APP_TIMER_NODE_SIZE, sizeof(uint32_t))]; } app_timer_t;
 
 /**@brief Timer ID type.
  * Never declare a variable of this type, but use the macro @ref APP_TIMER_DEF instead.*/

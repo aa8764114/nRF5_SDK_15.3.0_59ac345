@@ -61,6 +61,9 @@
 NRF_LOG_MODULE_REGISTER();
 #include "nrf_log_ctrl.h"
 
+#include "session.h"
+#include "history.h"
+
 //#define HW_TEST_QUIESCENT_CURRENT
 //#define HW_TEST_CLUTCH_DRIVER_PINS
 //#define TEST_MECH
@@ -666,6 +669,7 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
         case BLE_GAP_EVT_CONNECTED:
 //            err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
 //            APP_ERROR_CHECK(err_code);
+            NRF_LOG_INFO("Connect!!")
             err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, p_ble_evt->evt.gap_evt.conn_handle);
             APP_ERROR_CHECK(err_code);
             break;

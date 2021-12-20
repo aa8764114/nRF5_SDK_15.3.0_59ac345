@@ -1,0 +1,5 @@
+<!DOCTYPE CrossStudio_Project_File>
+<folder Name="ssm2_sdk_include">
+  <file file_name="$(SDK_DIR)/components/libraries/pwr_mgmt/nrf_pwr_mgmt.h" />
+  <file file_name="$(SDK_DIR)/components/libraries/util/sdk_common.h" />
+</folder>

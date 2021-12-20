@@ -81,7 +81,6 @@ SRC_FILES += \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_ble.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_soc.c \
   $(SDK_ROOT)/components/libraries/bootloader/nrf_bootloader_info.c \
-  $(SDK_ROOT)/components/ble_ssm2/ble_ssm2.c \
   $(SDK_ROOT)/components/ssm_boards/ss2sw.c \
   $(SDK_ROOT)/components/ssm_libraries/fdsx.c \
   $(SDK_ROOT)/components/ssm_libraries/misc.c \
@@ -90,16 +89,36 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/bootloader/nrf_bootloader_info.c \
   $(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
   $(SDK_ROOT)/components/ble_ssm2/security_layer.c \
-  $(SDK_ROOT)/components/ssm_mod_libraries/timer/app_timer.c \
-  $(SDK_ROOT)/components/ssm_mod_libraries/timer/experimental/app_timer2.c \
+  $(SDK_ROOT)/components/ssm_mod_libraries/timer/experimental/app_timer2_mod.c \
   $(SDK_ROOT)/components/ssm_mod_libraries/ble_dfu/ble_dfu.c \
   $(SDK_ROOT)/components/ssm_mod_libraries/ble_dfu/ble_dfu_bonded.c \
   $(SDK_ROOT)/components/ssm_mod_libraries/ble_dfu/ble_dfu_unbonded.c \
+  $(SDK_ROOT)/components/ssm_mod_libraries/timer/experimental/drv_rtc.c \
+  $(SDK_ROOT)/components/ble_ssm2/history.c \
+  $(SDK_ROOT)/components/ble_ssm2/watchdog.c \
+  $(SDK_ROOT)/components/ble_ssm2/application_layer.c \
+  $(SDK_ROOT)/components/ble_ssm2/ble_ssm2.c \
+  $(SDK_ROOT)/components/ble_ssm2/command_handler.c \
+  $(SDK_ROOT)/components/ble_ssm2/permission.c \
+  $(SDK_ROOT)/components/ble_ssm2/security_layer.c \
+  $(SDK_ROOT)/components/ble_ssm2/segment_layer.c \
+  $(SDK_ROOT)/components/ble_ssm2/session.c \
+  $(SDK_ROOT)/components/ble_ssm2/user.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_ppi.c \
+  $(SDK_ROOT)/components/libraries/sortlist/nrf_sortlist.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_wdt.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_rng.c \
+  $(SDK_ROOT)/components/libraries/queue/nrf_queue.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rng.c \
+  $(SDK_ROOT)/components/ssm_libraries/ecdh_p256.s \
+
 #  $(SDK_ROOT)/components/libraries/timer/experimental/app_timer2.c \
 #  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
+#  $(SDK_ROOT)/components/ssm_mod_libraries/timer/app_timer.c \
+
 
 
 
@@ -240,9 +259,12 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/bootloader/dfu \
   $(SDK_ROOT)/components/libraries/bootloader \
   $(SDK_ROOT)/components/ble/ble_advertising \
-  $(SDK_ROOT)/components/libraries/timer/experimental \
   $(SDK_ROOT)/components/ssm_mod_libraries/timer \
   $(SDK_ROOT)/components/ssm_mod_libraries/ble_dfu \
+  $(SDK_ROOT)/components/ssm_mod_libraries/timer/experimental \
+  $(SDK_ROOT)/components/ssm_config \
+  $(SDK_ROOT)/components/libraries/timer \
+  $(SDK_ROOT)/modules/nrfx/drivers/src \
 
 #  $(SDK_ROOT)/components/libraries/timer \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu \
@@ -276,6 +298,7 @@ CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin -fshort-enums
 CFLAGS += -DNRF_DFU_SVCI_ENABLED
 CFLAGS += -DNRF_DFU_TRANSPORT_BLE=1
+CFLAGS += -DAPP_TIMER_V2
 
 # C++ flags common to all targets
 CXXFLAGS += $(OPT)
@@ -296,6 +319,7 @@ ASMFLAGS += -DSOFTDEVICE_PRESENT
 ASMFLAGS += -DSWI_DISABLE0
 ASMFLAGS += -DNRF_DFU_SVCI_ENABLED
 ASMFLAGS += -DNRF_DFU_TRANSPORT_BLE=1
+ASMFLAGS += -DAPP_TIMER_V2
 
 # Linker flags
 LDFLAGS += $(OPT)
@@ -353,6 +377,9 @@ flash_softdevice:
 
 erase:
 	nrfjprog -f nrf52 --eraseall
+
+ssm_bike: default
+	./gen_all.sh
 
 SDK_CONFIG_FILE := ../config/sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar

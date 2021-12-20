@@ -38,7 +38,7 @@
  *
  */
 
-
+#include "app_config.h"
 
 #ifndef SDK_CONFIG_H
 #define SDK_CONFIG_H
@@ -2487,7 +2487,7 @@
 // <e> NRFX_PPI_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_PPI_CONFIG_LOG_ENABLED
-#define NRFX_PPI_CONFIG_LOG_ENABLED 0
+#define NRFX_PPI_CONFIG_LOG_ENABLED 1
 #endif
 // <o> NRFX_PPI_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -4389,7 +4389,7 @@
 // <e> NRFX_UARTE_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_UARTE_CONFIG_LOG_ENABLED
-#define NRFX_UARTE_CONFIG_LOG_ENABLED 0
+#define NRFX_UARTE_CONFIG_LOG_ENABLED 1
 #endif
 // <o> NRFX_UARTE_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -4617,7 +4617,7 @@
 // <e> NRFX_WDT_ENABLED - nrfx_wdt - WDT peripheral driver
 //==========================================================
 #ifndef NRFX_WDT_ENABLED
-#define NRFX_WDT_ENABLED 0
+#define NRFX_WDT_ENABLED 1
 #endif
 // <o> NRFX_WDT_CONFIG_BEHAVIOUR  - WDT behavior in CPU SLEEP or HALT mode
  
@@ -4855,7 +4855,7 @@
  
 
 #ifndef PPI_ENABLED
-#define PPI_ENABLED 0
+#define PPI_ENABLED 1
 #endif
 
 // <e> PWM_ENABLED - nrf_drv_pwm - PWM peripheral driver - legacy layer
@@ -5950,7 +5950,7 @@
 // <e> WDT_ENABLED - nrf_drv_wdt - WDT peripheral driver - legacy layer
 //==========================================================
 #ifndef WDT_ENABLED
-#define WDT_ENABLED 0
+#define WDT_ENABLED 1
 #endif
 // <o> WDT_CONFIG_BEHAVIOUR  - WDT behavior in CPU SLEEP or HALT mode
  
@@ -8311,7 +8311,7 @@
 // <e> PPI_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef PPI_CONFIG_LOG_ENABLED
-#define PPI_CONFIG_LOG_ENABLED 0
+#define PPI_CONFIG_LOG_ENABLED 1
 #endif
 // <o> PPI_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -8981,7 +8981,7 @@
 // <e> WDT_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef WDT_CONFIG_LOG_ENABLED
-#define WDT_CONFIG_LOG_ENABLED 0
+#define WDT_CONFIG_LOG_ENABLED 1
 #endif
 // <o> WDT_CONFIG_LOG_LEVEL  - Default Severity level
  

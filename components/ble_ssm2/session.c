@@ -94,7 +94,6 @@ void session_pool_dump(void)
 
 session_t* session_acquire(uint16_t conn_handle)
 {
-    ret_code_t err_code;
     session_t* session;
     session_t* ret = NULL;
 
@@ -176,7 +175,6 @@ uint8_t session_get_connected_count(void)
 
 uint16_t session_get_conn_handle_to_disconnect(session_t const * const session_latest)
 {
-    ret_code_t err_code;
     uint32_t oldest_connect = UINT32_MAX;
     uint32_t oldest_login = UINT32_MAX;
     session_t* sess;
@@ -552,6 +550,7 @@ void session_publish_mech_status_to_all(bool is_critical)
 ret_code_t session_tx_add_res_ex(session_t* session, uint16_t op_item_code, uint16_t result, uint16_t data_len, void const * data, ssm2_seg_parsing_type_e parsing_type)
 {
     ret_code_t err_code;
+    err_code = NRF_SUCCESS;
     typedef struct response_s
     {
         uint16_t    op_code         : 8;
@@ -702,6 +701,7 @@ ret_code_t session_tx_add_mech_status(session_t* session, bool is_critical, uint
 ret_code_t session_tx_add(session_t* session, ssm2_seg_parsing_type_e parsing_type, void const * data, uint16_t data_len)
 {
     ret_code_t err_code;
+    err_code = NRF_SUCCESS;
     uint16_t expected_len;
     tx_task_t* tx_task;
 

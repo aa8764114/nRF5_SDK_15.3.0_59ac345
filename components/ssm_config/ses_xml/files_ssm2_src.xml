@@ -1,0 +1,13 @@
+<!DOCTYPE CrossStudio_Project_File>
+<folder Name="ssm2_src">
+  <file file_name="$(LibDir)/misc.c" />
+  <file file_name="$(LibDir)/storage_impl.c" />
+  <file file_name="$(LibDir)/vhw_ssm1_us.c" />
+  <file file_name="$(Ssm2Dir)/impl/ssm2_adv.c" />
+  <file file_name="$(Ssm2Dir)/impl/ssm2_aes.c" />
+  <file file_name="$(Ssm2Dir)/impl/ssm2_cmd_handler.c" />
+  <file file_name="$(Ssm2Dir)/impl/ssm2_link.c" />
+  <file file_name="$(Ssm2Dir)/ssm2.c" />
+  <file file_name="$(Ssm2Dir)/ssm2_ble.c" />
+  <file file_name="$(Ssm2Dir)/ssm2_security.c" />
+</folder>
