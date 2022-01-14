@@ -297,30 +297,6 @@ void batt_adc_update_done(void)
     CRITICAL_REGION_EXIT();
 }
 
-//void switch_sensor_update_request(void)
-//{   
-//
-//    CRITICAL_REGION_ENTER();
-//    switch_sensor_update_req = true;
-//    CRITICAL_REGION_EXIT();
-//}
-
-//bool need_to_switch_sensor_update(void)
-//{   
-//    bool ret_val = true;
-//    CRITICAL_REGION_ENTER();
-//    ret_val = switch_sensor_update_req;
-//    CRITICAL_REGION_EXIT();
-//    return ret_val;
-//}
-
-//void switch_sensor_update_done(void)
-//{
-//    CRITICAL_REGION_ENTER();
-//    switch_sensor_update_req = false;
-//    CRITICAL_REGION_EXIT();
-//}
-
 void ss2_wakeup_state_machine(void * p_event_data, uint16_t event_size)
 {
     ret_code_t err_code;
@@ -429,11 +405,6 @@ static void prepare_cur_act_seq_from_mechs()
 static void stateM_timeout_handler(void * p_context)
 {
     uint32_t	err_code;
-//    static ss2sw_event_t event = {0};
-
-    //event.mech_status.in_lock_range = false;
-    //event.mech_status.is_autolock_drive = false;
-    //event.mech_status.is_clutch_failed = false;
 	
     if (break_cmd_req != break_cmd_done)
     {
@@ -442,18 +413,12 @@ static void stateM_timeout_handler(void * p_context)
 
     if (actseq_state == ACTSEQ_INIT_)
     {
-        //if (actseq_exec == true)
-        //{
-        //    return;
-        //}
         idx_cur_act_seq = 0;
         cur_exec_loop_done = 0;
         cur_exec_iteration_done = 0;
         cur_exec_iteration_max =0;
         copy_to_cur_act_seq(poweron_motor_init_seq);
         cur_act_type = poweron_motor_init_seq;
-        //actseq_req = 1;
-        //actseq_done = 0;
         
         actseq_state = ACTSEQ_EXEC_;
         event.history_type = SS2SW_HISTORY_TYPE_NONE;
@@ -593,11 +558,6 @@ static void stateM_timeout_handler(void * p_context)
               event.history_type = SS2SW_HISTORY_TYPE_NONE;
               event.mech_status.battery = battery.adc;
 
-              //event.mech_status.in_unlock_range = false;
-              //event.mech_status.is_critical = false;
-              // event.mech_status.position = 0; 
-              //event.mech_status.target = conf.unlock;
-
               EVENT_HANDLER(&event);
 
               ++idx_cur_act_seq;
@@ -607,27 +567,7 @@ static void stateM_timeout_handler(void * p_context)
         }
     }
     else if (actseq_state == ACTSEQ_GET_NEW_ACTSEQ_)
-    {   
-        //if (need_to_switch_sensor_update())
-        //{
-        //    switch_sensor_update_done();
-        //    if (msw_gpio_stable)
-        //    {
-        //        event.history_type = SS2SW_HISTORY_TYPE_MANUAL_LOCKED;
-        //        event.mech_status.is_locked = true;
-        //        event.mech_status.is_unlocked = false;
-        //        //event.mech_status.in_unlock_range = false;
-        //    }
-        //    else
-        //    {
-        //        event.history_type = SS2SW_HISTORY_TYPE_MANUAL_UNLOCKED;
-        //        event.mech_status.is_locked = false;
-        //        event.mech_status.is_unlocked = true;
-        //        //event.mech_status.in_unlock_range = true;
-        //    }
-        //    EVENT_HANDLER(&event);
-        //}
-
+    {
         if (need_to_batt_adc_update())
         {
             batt_adc_update_done();
@@ -746,12 +686,6 @@ static void calib_timer_handler(void * p_context)
         NRF_LOG_DEBUG("[%s] actseq_exec=%d, skipped", __func__, actseq_exec);
     }
 }
-
-//static void mswitch_gpio_change_handler(void * p_context)
-//{
-//    //switch_sensor_update_request();
-//    app_sched_event_put(NULL, 0,ss2_wakeup_state_machine);
-//}
 
 static void msw_gpio_polling_state_handler(void * p_context)
 {    
@@ -966,42 +900,7 @@ void ss2sw_init(ss2sw_init_t const * init)
     APP_ERROR_CHECK(err_code);
     err_code = nrfx_ppi_channel_enable(ppi_ch_on_adc_calib);
     APP_ERROR_CHECK(err_code);
-
-
-//#ifndef DIRECT_EVENT_HANDLER
-//#ifdef DEBUG
-//    APP_ERROR_CHECK_BOOL((EVENT_INT_PRIORITY == NVIC_GetPriority(SD_EVT_IRQn)));
-//#endif
-//    NVIC_ClearPendingIRQ(EVENT_IRQn);
-//    NVIC_SetPriority(EVENT_IRQn, EVENT_INT_PRIORITY);
-//    NVIC_EnableIRQ(EVENT_IRQn);
-//#endif
 }
-
-//static void mswitch_gpio_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
-//{
-//    ret_code_t err_code;
-//
-//    app_timer_stop(mswitch_debounce_timer);
-//    err_code = app_timer_start(mswitch_debounce_timer, APP_TIMER_TICKS(MICRO_SWITCH_DEBOUNCE_MS), NULL);
-//    APP_ERROR_CHECK(err_code);
-//}
-
-//static void micro_switch_sensor_start(void)
-//{
-//    ret_code_t err_code;
-//
-//    //err_code = nrf_drv_gpiote_init();
-//    //APP_ERROR_CHECK(err_code);
-//
-//    nrf_drv_gpiote_in_config_t in_config = GPIOTE_CONFIG_IN_SENSE_TOGGLE(true);
-//    in_config.pull = GPIO_PIN_CNF_PULL_Disabled;
-//
-//    err_code = nrf_drv_gpiote_in_init(GPIO_MICRO_SWITCH_SENSOR, &in_config, mswitch_gpio_handler);
-//    APP_ERROR_CHECK(err_code);
-//
-//    nrf_drv_gpiote_in_event_enable(GPIO_MICRO_SWITCH_SENSOR, true);
-//}
 
 void ss2sw_start(void)
 {
@@ -1083,11 +982,6 @@ void SAADC_IRQHandler(void)
             batt_adc_update_request();
             app_sched_event_put(NULL, 0,ss2_wakeup_state_machine);
         }
-        //else
-        //{
-        //    rtc_ms = THREE_MINUTE_RTC_MS;
-        //    nrf_rtc_cc_set(RTC_REG, 0, rtc_ms);
-        //}
  
         if (need_calibrate)
         {
@@ -1104,12 +998,3 @@ void SAADC_IRQHandler(void)
     rtc_ms = THREE_MINUTE_RTC_MS;
     nrf_rtc_cc_set(RTC_REG, 0, rtc_ms);
 }
-
-
-#if 0
-__WEAK void ss2sw_event_handler(ss2sw_event_t const * event)
-{
-    UNUSED_PARAMETER(event);
-    NRF_LOG_WARNING("[%s] weak");
-}
-#endif

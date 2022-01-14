@@ -1,10 +1,6 @@
 #ifndef CUSTOM_BOARD_US1_JP1_H__
 #define CUSTOM_BOARD_US1_JP1_H__
 
-/*
- * Definition for SDK BSP
- */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
