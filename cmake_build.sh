@@ -44,7 +44,7 @@ EOF
 
 #/Users/motosawa/Documents/nRF5_SDK_17.1.0_ddde560/components/ble_ssm2
 #./examples/my_project/ssm2_bike
-for makefile in `\find ./examples/my_project/ssm2_bike -name Makefile` ; do
+for makefile in `\find ./examples/my_project/ssm4_pro -name Makefile` ; do
     dir=`\dirname ${makefile}`
     \echo "Creating CMakeLists.txt for ${makefile}"
     \pushd ${dir} > /dev/null

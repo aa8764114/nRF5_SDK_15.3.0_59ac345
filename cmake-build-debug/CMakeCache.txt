@@ -235,6 +235,12 @@ LIBRARY_OUTPUT_PATH:PATH=
 ProcessorCount_cmd_sysctl:FILEPATH=/usr/sbin/sysctl
 
 //Value Computed by CMake
+ble_app_buttonless_dfu_pca10040_s132_BINARY_DIR:STATIC=/Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug/examples/my_project/ssm4_pro/pca10040/s132/armgcc
+
+//Value Computed by CMake
+ble_app_buttonless_dfu_pca10040_s132_SOURCE_DIR:STATIC=/Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/examples/my_project/ssm4_pro/pca10040/s132/armgcc
+
+//Value Computed by CMake
 ble_app_template_pca10056_s140_BINARY_DIR:STATIC=/Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug/examples/my_project/ssm2_bike/pca10056/s140/armgcc
 
 //Value Computed by CMake
@@ -357,7 +363,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

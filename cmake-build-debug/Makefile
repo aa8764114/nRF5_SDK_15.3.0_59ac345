@@ -117,17 +117,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named ble_app_template_pca10056_s140
+# Target rules for targets named ble_app_buttonless_dfu_pca10040_s132
 
 # Build rule for target.
-ble_app_template_pca10056_s140: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ble_app_template_pca10056_s140
-.PHONY : ble_app_template_pca10056_s140
+ble_app_buttonless_dfu_pca10040_s132: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ble_app_buttonless_dfu_pca10040_s132
+.PHONY : ble_app_buttonless_dfu_pca10040_s132
 
 # fast build rule for target.
-ble_app_template_pca10056_s140/fast:
-	$(MAKE) $(MAKESILENT) -f examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build.make examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir/build
-.PHONY : ble_app_template_pca10056_s140/fast
+ble_app_buttonless_dfu_pca10040_s132/fast:
+	$(MAKE) $(MAKESILENT) -f examples/my_project/ssm4_pro/pca10040/s132/armgcc/CMakeFiles/ble_app_buttonless_dfu_pca10040_s132.dir/build.make examples/my_project/ssm4_pro/pca10040/s132/armgcc/CMakeFiles/ble_app_buttonless_dfu_pca10040_s132.dir/build
+.PHONY : ble_app_buttonless_dfu_pca10040_s132/fast
 
 # Help Target
 help:
@@ -137,7 +137,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... ble_app_template_pca10056_s140"
+	@echo "... ble_app_buttonless_dfu_pca10040_s132"
 .PHONY : help
 
 

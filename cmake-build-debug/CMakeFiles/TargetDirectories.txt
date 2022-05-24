@@ -1,5 +1,5 @@
 /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug/CMakeFiles/rebuild_cache.dir
 /Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug/examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/rebuild_cache.dir
-/Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug/examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/edit_cache.dir
-/Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug/examples/my_project/ssm2_bike/pca10056/s140/armgcc/CMakeFiles/ble_app_template_pca10056_s140.dir
+/Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug/examples/my_project/ssm4_pro/pca10040/s132/armgcc/CMakeFiles/rebuild_cache.dir
+/Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug/examples/my_project/ssm4_pro/pca10040/s132/armgcc/CMakeFiles/edit_cache.dir
+/Users/motosawa/Documents/nRF5_SDK_15.3.0_59ac345/cmake-build-debug/examples/my_project/ssm4_pro/pca10040/s132/armgcc/CMakeFiles/ble_app_buttonless_dfu_pca10040_s132.dir
