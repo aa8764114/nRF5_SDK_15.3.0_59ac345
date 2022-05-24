@@ -1,5 +1,0 @@
-<!DOCTYPE CrossStudio_Project_File>
-<folder Name="ssm2_include">
-  <file file_name="$(Ssm2Dir)/sdk_config.h" />
-  <file file_name="$(Ssm2Dir)/ssm2.h" />
-</folder>
