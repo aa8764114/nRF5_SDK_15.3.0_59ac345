@@ -1,13 +1,3 @@
-/** @example examples/ble_peripheral/ble_app_buttonless_dfu
- *
- * @brief Modified from Secure DFU Buttonless Service Application main file.
- *
- * This file contains the source code for a sample application using the proprietary
- * Secure DFU Buttonless Service. This is a template application that can be modified
- * to your needs. To extend the functionality of this application, please find
- * locations where the comment "// YOUR_JOB:" is present and read the comments.
- */
-
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -56,8 +46,11 @@
 
 #define NRF_LOG_MODULE_NAME     Main
 #define NRF_LOG_LEVEL           NRF_LOG_SEVERITY_INFO
+
 #include "nrf_log.h"
+
 NRF_LOG_MODULE_REGISTER();
+
 #include "nrf_log_ctrl.h"
 
 //#define HW_TEST_QUIESCENT_CURRENT
@@ -105,13 +98,14 @@ NRF_LOG_MODULE_REGISTER();
 
 typedef struct app_s
 {
-    us1_jp1_mech_status_t    mech_status;
+    us1_jp1_mech_status_t mech_status;
 } app_t;
 
 static app_t app;
 
 NRF_BLE_GATT_DEF(m_gatt);                                                           /**< GATT module instance. */
-NRF_BLE_QWR_DEF(m_qwr);                                                             /**< Context for the Queued Write module.*/
+NRF_BLE_QWR_DEF(
+        m_qwr);                                                             /**< Context for the Queued Write module.*/
 BLE_ADVERTISING_DEF(m_advertising);                                                 /**< Advertising module instance. */
 
 
@@ -200,7 +194,7 @@ static bool app_shutdown_handler(nrf_pwr_mgmt_evt_t event)
 NRF_PWR_MGMT_HANDLER_REGISTER(app_shutdown_handler, 0);
 
 
-static void buttonless_dfu_sdh_state_observer(nrf_sdh_state_evt_t state, void * p_context)
+static void buttonless_dfu_sdh_state_observer(nrf_sdh_state_evt_t state, void *p_context)
 {
     if (state == NRF_SDH_EVT_STATE_DISABLED)
     {
@@ -214,22 +208,22 @@ static void buttonless_dfu_sdh_state_observer(nrf_sdh_state_evt_t state, void * 
 
 /* nrf_sdh state observer. */
 NRF_SDH_STATE_OBSERVER(m_buttonless_dfu_state_obs, 0) =
-{
-    .handler = buttonless_dfu_sdh_state_observer,
-};
+        {
+                .handler = buttonless_dfu_sdh_state_observer,
+        };
 
 
-static void advertising_config_get(ble_adv_modes_config_t * p_config)
+static void advertising_config_get(ble_adv_modes_config_t *p_config)
 {
     memset(p_config, 0, sizeof(ble_adv_modes_config_t));
 
-    p_config->ble_adv_fast_enabled  = true;
+    p_config->ble_adv_fast_enabled = true;
     p_config->ble_adv_fast_interval = APP_ADV_INTERVAL;
-    p_config->ble_adv_fast_timeout  = APP_ADV_DURATION;
+    p_config->ble_adv_fast_timeout = APP_ADV_DURATION;
 }
 
 
-static void disconnect(uint16_t conn_handle, void * p_context)
+static void disconnect(uint16_t conn_handle, void *p_context)
 {
     UNUSED_PARAMETER(p_context);
 
@@ -237,8 +231,7 @@ static void disconnect(uint16_t conn_handle, void * p_context)
     if (err_code != NRF_SUCCESS)
     {
         NRF_LOG_WARNING("Failed to disconnect connection. Connection handle: %d Error: %d", conn_handle, err_code);
-    }
-    else
+    } else
     {
         NRF_LOG_DEBUG("Disconnected connection handle %d", conn_handle);
     }
@@ -310,7 +303,7 @@ static void ble_dfu_evt_handler(ble_dfu_buttonless_evt_type_t event)
  * @param[in] line_num   Line number of the failing ASSERT call.
  * @param[in] file_name  File name of the failing ASSERT call.
  */
-void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
+void assert_nrf_callback(uint16_t line_num, const uint8_t *p_file_name)
 {
     app_error_handler(DEAD_BEEF, line_num, p_file_name);
 }
@@ -447,21 +440,21 @@ static void timers_init(void)
  */
 static void gap_params_init(void)
 {
-    static uint8_t  base64_ir[BASE64_ENCODE_OUT_SIZE(sizeof(NRF_FICR->IR))];
-    uint32_t                err_code;
+    static char base64_ir[BASE64_ENCODE_OUT_SIZE(sizeof(NRF_FICR->IR))];
+    uint32_t err_code;
     ble_gap_conn_sec_mode_t sec_mode;
     unsigned int len;
 
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
 
     NRF_LOG_DEBUG("[%s] NRF_FICR->IR:", __func__)
-    NRF_LOG_HEXDUMP_DEBUG((void*)NRF_FICR->IR, sizeof(NRF_FICR->IR));
-    len = base64_encode((const uint8_t *)&NRF_FICR->IR, sizeof(NRF_FICR->IR), base64_ir);
+    NRF_LOG_HEXDUMP_DEBUG((void *) NRF_FICR->IR, sizeof(NRF_FICR->IR));
+    len = base64_encode((const uint8_t *) &NRF_FICR->IR, sizeof(NRF_FICR->IR), base64_ir);
     NRF_LOG_DEBUG("[%s] base64_encode()=%d, %s", __func__, len, base64_ir);
     APP_ERROR_CHECK_BOOL((len == sizeof(base64_ir) - 1));
     err_code = sd_ble_gap_device_name_set(&sec_mode,
-                                          (const uint8_t *)base64_ir,
-                                          sizeof(base64_ir)-1-2);
+                                          (const uint8_t *) base64_ir,
+                                          sizeof(base64_ir) - 1 - 2);
     APP_ERROR_CHECK(err_code);
 
     /* YOUR_JOB: Use an appearance value matching the application's use case.
@@ -517,8 +510,8 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
  */
 static void services_init(void)
 {
-    uint32_t                  err_code;
-    nrf_ble_qwr_init_t        qwr_init  = {0};
+    uint32_t err_code;
+    nrf_ble_qwr_init_t qwr_init = {0};
     ble_dfu_buttonless_init_t dfus_init = {0};
     ble_ssm2_init_t ssm2_init = {
     };
@@ -538,10 +531,8 @@ static void services_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
-static void on_conn_params_evt(ble_conn_params_evt_t * p_evt)
+static void on_conn_params_evt(ble_conn_params_evt_t *p_evt)
 {
-    uint32_t err_code;
-
     NRF_LOG_INFO("[%s] evt_type=%d", __func__, p_evt->evt_type);
 }
 
@@ -564,19 +555,19 @@ static void conn_params_error_handler(uint32_t nrf_error)
  */
 static void conn_params_init(void)
 {
-    uint32_t               err_code;
+    uint32_t err_code;
     ble_conn_params_init_t cp_init;
 
     memset(&cp_init, 0, sizeof(cp_init));
 
-    cp_init.p_conn_params                  = ble_ssm2_get_conn_param_ptr();
+    cp_init.p_conn_params = ble_ssm2_get_conn_param_ptr();
     cp_init.first_conn_params_update_delay = FIRST_CONN_PARAMS_UPDATE_DELAY;
-    cp_init.next_conn_params_update_delay  = NEXT_CONN_PARAMS_UPDATE_DELAY;
-    cp_init.max_conn_params_update_count   = MAX_CONN_PARAMS_UPDATE_COUNT;
-    cp_init.start_on_notify_cccd_handle    = ble_ssm2_get_tx_cccd_handle();
-    cp_init.disconnect_on_fail             = false;
-    cp_init.evt_handler                    = on_conn_params_evt;
-    cp_init.error_handler                  = conn_params_error_handler;
+    cp_init.next_conn_params_update_delay = NEXT_CONN_PARAMS_UPDATE_DELAY;
+    cp_init.max_conn_params_update_count = MAX_CONN_PARAMS_UPDATE_COUNT;
+    cp_init.start_on_notify_cccd_handle = ble_ssm2_get_tx_cccd_handle();
+    cp_init.disconnect_on_fail = false;
+    cp_init.evt_handler = on_conn_params_evt;
+    cp_init.error_handler = conn_params_error_handler;
 
     err_code = ble_conn_params_init(&cp_init);
     APP_ERROR_CHECK(err_code);
@@ -651,7 +642,7 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
  * @param[in]   p_ble_evt   Bluetooth stack event.
  * @param[in]   p_context   Unused.
  */
-static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
+static void ble_evt_handler(ble_evt_t const *p_ble_evt, void *p_context)
 {
     uint32_t err_code = NRF_SUCCESS;
 
@@ -672,10 +663,10 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
         {
             NRF_LOG_DEBUG("PHY update request.");
             ble_gap_phys_t const phys =
-            {
-                .rx_phys = BLE_GAP_PHY_AUTO,
-                .tx_phys = BLE_GAP_PHY_AUTO,
-            };
+                    {
+                            .rx_phys = BLE_GAP_PHY_AUTO,
+                            .tx_phys = BLE_GAP_PHY_AUTO,
+                    };
             err_code = sd_ble_gap_phy_update(p_ble_evt->evt.gap_evt.conn_handle, &phys);
             APP_ERROR_CHECK(err_code);
             break;
@@ -727,7 +718,7 @@ static void ble_stack_init(void)
 
         cfg.conn_cfg.conn_cfg_tag = APP_BLE_CONN_CFG_TAG;
         cfg.conn_cfg.params.gatts_conn_cfg.hvn_tx_queue_size = CUSTOMIZE_HVN_TX_QUEUE_SIZE;
-        err_code = sd_ble_cfg_set(BLE_CONN_CFG_GATTS, &cfg, (uint32_t)&ram_start);
+        err_code = sd_ble_cfg_set(BLE_CONN_CFG_GATTS, &cfg, (uint32_t) &ram_start);
         APP_ERROR_CHECK(err_code);
     }
 #endif
@@ -752,46 +743,44 @@ static void bsp_event_handler(bsp_event_t event)
 
     switch (event)
     {
-    case BSP_EVENT_KEY_0:
-        NRF_LOG_DEBUG("[%s] button pressed", __func__);
-        err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_0);
-        APP_ERROR_CHECK(err_code);
-        break;
-    case BSP_EVENT_CLEAR_ALERT:
-        NRF_LOG_DEBUG("[%s] button released, clear_all=%d", __func__, clear_all);
-        if (clear_all)
-        {
-            ble_ssm2_on_clear_all_triggered();
-        }
-        else
-        {
-            if (session_get_connected_count() == 0)
+        case BSP_EVENT_KEY_0:
+            NRF_LOG_DEBUG("[%s] button pressed", __func__);
+            err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_0);
+            APP_ERROR_CHECK(err_code);
+            break;
+        case BSP_EVENT_CLEAR_ALERT:
+            NRF_LOG_DEBUG("[%s] button released, clear_all=%d", __func__, clear_all);
+            if (clear_all)
             {
-                err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING_SLOW);
-                APP_ERROR_CHECK(err_code);
-            }
-            else
+                ble_ssm2_on_clear_all_triggered();
+            } else
             {
-                err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
-                APP_ERROR_CHECK(err_code);
-            }
+                if (session_get_connected_count() == 0)
+                {
+                    err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING_SLOW);
+                    APP_ERROR_CHECK(err_code);
+                } else
+                {
+                    err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
+                    APP_ERROR_CHECK(err_code);
+                }
 #ifdef TEST_MECH
-            static uint8_t preset = US1_JP1_PRESET_LOCK;
-            err_code = us1_jp1_goto_preset(preset);
-            NRF_LOG_INFO("[%s] us1_jp1_goto_preset(%d)=%d", __func__, preset, err_code);
-            preset = preset == US1_JP1_PRESET_LOCK ? US1_JP1_PRESET_UNLOCK : US1_JP1_PRESET_LOCK;
+                static uint8_t preset = US1_JP1_PRESET_LOCK;
+                err_code = us1_jp1_goto_preset(preset);
+                NRF_LOG_INFO("[%s] us1_jp1_goto_preset(%d)=%d", __func__, preset, err_code);
+                preset = preset == US1_JP1_PRESET_LOCK ? US1_JP1_PRESET_UNLOCK : US1_JP1_PRESET_LOCK;
 #endif
-        }
-        break;
-    case BSP_EVENT_RESET:
-        NRF_LOG_DEBUG("[%s] button long pressed", __func__);
-        err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_OFF);
-        APP_ERROR_CHECK(err_code);
-        clear_all = true;
-        break;
-    default:
+            }
+            break;
+        case BSP_EVENT_RESET:
+            NRF_LOG_DEBUG("[%s] button long pressed", __func__);
+            err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_OFF);
+            APP_ERROR_CHECK(err_code);
+            clear_all = true;
+            break;
+        default:
 //        NRF_LOG_WARNING("[%s] unexpected event=%d", __func__, event);
-        break;
+            break;
     }
 }
 
@@ -812,7 +801,6 @@ static void advertising_init(void)
 static void buttons_leds_init(void)
 {
     uint32_t err_code;
-    bsp_event_t startup_event;
 
     err_code = bsp_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS, bsp_event_handler);
     APP_ERROR_CHECK(err_code);
@@ -889,7 +877,7 @@ static void idle_state_handle(void)
 static uint32_t fds_end_page(void)
 {
     uint32_t const bootloader_addr = BOOTLOADER_ADDRESS;
-    uint32_t const page_sz         = NRF_FICR->CODEPAGESIZE;
+    uint32_t const page_sz = NRF_FICR->CODEPAGESIZE;
 
 #if defined(NRF52810_XXAA) || defined(NRF52811_XXAA)
     // Hardcode the number of flash pages, necessary for SoC emulation.
@@ -897,12 +885,12 @@ static uint32_t fds_end_page(void)
     // nRF52811 on nRF52840
     uint32_t const code_sz = 48;
 #else
-   uint32_t const code_sz = NRF_FICR->CODESIZE;
+    uint32_t const code_sz = NRF_FICR->CODESIZE;
 #endif
 
     uint32_t end_addr = (bootloader_addr != 0xFFFFFFFF) ? bootloader_addr : (code_sz * page_sz);
 
-    return (end_addr/ (FDS_PHY_PAGE_SIZE * sizeof(uint32_t))) - FDS_PHY_PAGES_RESERVED;
+    return (end_addr / (FDS_PHY_PAGE_SIZE * sizeof(uint32_t))) - FDS_PHY_PAGES_RESERVED;
 }
 
 static ret_code_t erase_fds_pages(void)
@@ -914,7 +902,7 @@ static ret_code_t erase_fds_pages(void)
     APP_ERROR_CHECK_BOOL((fds_start_page_number >= FDS_VIRTUAL_PAGES));
     fds_start_page_number -= FDS_VIRTUAL_PAGES;
 
-    for (i=0; i<FDS_VIRTUAL_PAGES; i++)
+    for (i = 0; i < FDS_VIRTUAL_PAGES; i++)
     {
         err_code = sd_flash_page_erase(fds_start_page_number + i);
         while (err_code == NRF_ERROR_BUSY)
@@ -1024,44 +1012,47 @@ static void init_config(void)
         err_code = fds_record_iterate(&desc, &token);
         switch (err_code)
         {
-        case FDS_SUCCESS:
-            err_code = fds_record_open(&desc, &record);
-            APP_ERROR_CHECK(err_code);
-
-            if (record.p_header->file_id < 0xC000 && record.p_header->record_key > 0 && record.p_header->record_key < 0xC000)
-            {
-                NRF_LOG_INFO("[%s] file_id=%d, record_key=%d, record_id=%d, length_words=%d", __func__, record.p_header->file_id, record.p_header->record_key, record.p_header->record_id, record.p_header->length_words);
-                delete_record = ssm2_on_init_iter_record(&record);
-            }
-            else
-            {
-                delete_record = false;
-                NRF_LOG_INFO("[%s] ignored peer manager record: file_id=%d, record_key=%d", __func__, record.p_header->file_id, record.p_header->record_key);
-            }
-
-            err_code = fds_record_close(&desc);
-            APP_ERROR_CHECK(err_code);
-
-            if (delete_record)
-            {
-                err_code = fdsx_delete_by_record_id(desc.record_id);
-                if (err_code == NRF_ERROR_RESOURCES)
-                {
-                    fdsx_wait_for_all_jobs();
-                    err_code = fdsx_delete_by_record_id(desc.record_id);
-                }
+            case FDS_SUCCESS:
+                err_code = fds_record_open(&desc, &record);
                 APP_ERROR_CHECK(err_code);
-                NRF_LOG_INFO("[%s] fdsx_delete_by_record_id(%d)=%d", __func__, desc.record_id, err_code);
-            }
-            break;
-        case FDS_ERR_NOT_FOUND:
-            NRF_LOG_INFO("[%s] record iterate done", __func__);
-            exit = 1;
-            break;
-        default:
-            NRF_LOG_ERROR("[%s] fds_record_iterate()=%d", __func__, err_code);
-            exit = 1;
-            break;
+
+                if (record.p_header->file_id < 0xC000 && record.p_header->record_key > 0 &&
+                    record.p_header->record_key < 0xC000)
+                {
+                    NRF_LOG_INFO("[%s] file_id=%d, record_key=%d, record_id=%d, length_words=%d", __func__,
+                                 record.p_header->file_id, record.p_header->record_key, record.p_header->record_id,
+                                 record.p_header->length_words);
+                    delete_record = ssm2_on_init_iter_record(&record);
+                } else
+                {
+                    delete_record = false;
+                    NRF_LOG_INFO("[%s] ignored peer manager record: file_id=%d, record_key=%d", __func__,
+                                 record.p_header->file_id, record.p_header->record_key);
+                }
+
+                err_code = fds_record_close(&desc);
+                APP_ERROR_CHECK(err_code);
+
+                if (delete_record)
+                {
+                    err_code = fdsx_delete_by_record_id(desc.record_id);
+                    if (err_code == NRF_ERROR_RESOURCES)
+                    {
+                        fdsx_wait_for_all_jobs();
+                        err_code = fdsx_delete_by_record_id(desc.record_id);
+                    }
+                    APP_ERROR_CHECK(err_code);
+                    NRF_LOG_INFO("[%s] fdsx_delete_by_record_id(%d)=%d", __func__, desc.record_id, err_code);
+                }
+                break;
+            case FDS_ERR_NOT_FOUND:
+                NRF_LOG_INFO("[%s] record iterate done", __func__);
+                exit = 1;
+                break;
+            default:
+                NRF_LOG_ERROR("[%s] fds_record_iterate()=%d", __func__, err_code);
+                exit = 1;
+                break;
         }
         NRF_LOG_FLUSH();
     }
@@ -1181,7 +1172,7 @@ int main(void)
 /*
  * Strong implemetation to override
  */
-ret_code_t ble_ssm2_event_handler(ble_ssm2_event_t const * event)
+ret_code_t ble_ssm2_event_handler(ble_ssm2_event_t const *event)
 {
     NRF_LOG_INFO("[%s] type=%d", __func__, event->type);
 
@@ -1191,87 +1182,94 @@ ret_code_t ble_ssm2_event_handler(ble_ssm2_event_t const * event)
 
     switch (event->type)
     {
-    case BLE_SSM2_EVT_UPDATE_MECH_SETTING:
-        if (event->data.update_mech_setting.len != sizeof(us1_jp1_conf_t))
-        {
-            return NRF_ERROR_INVALID_LENGTH;
-        }
-        return us1_jp1_update_mech_setting((us1_jp1_conf_t const *)event->data.update_mech_setting.setting);
-    case BLE_SSM2_EVT_MECH_GOTO_PRESET:
-        return us1_jp1_goto_preset(event->data.mech_goto_preset.preset);
-    case BLE_SSM2_EVT_MECH_STOP:
-        return us1_jp1_mech_stop();
-    case BLE_SSM2_EVT_UPDATE_MECH_AUTOLOCK:
-        return us1_jp1_update_autolock(event->data.autolock.second);
-    case BLE_SSM2_EVT_CONNECTION:
-    default:
-        NRF_LOG_WARNING("[%s] unexpected=%d", __func__, event->type);
-        return NRF_ERROR_NOT_SUPPORTED;
+        case BLE_SSM2_EVT_UPDATE_MECH_SETTING:
+            if (event->data.update_mech_setting.len != sizeof(us1_jp1_conf_t))
+            {
+                return NRF_ERROR_INVALID_LENGTH;
+            }
+            return us1_jp1_update_mech_setting((us1_jp1_conf_t const *) event->data.update_mech_setting.setting);
+        case BLE_SSM2_EVT_MECH_GOTO_PRESET:
+            return us1_jp1_goto_preset(event->data.mech_goto_preset.preset);
+        case BLE_SSM2_EVT_MECH_STOP:
+            return us1_jp1_mech_stop();
+        case BLE_SSM2_EVT_UPDATE_MECH_AUTOLOCK:
+            return us1_jp1_update_autolock(event->data.autolock.second);
+        case BLE_SSM2_EVT_CONNECTION:
+        default:
+            NRF_LOG_WARNING("[%s] unexpected=%d", __func__, event->type);
+            return NRF_ERROR_NOT_SUPPORTED;
     }
 }
 
-void us1_jp1_event_handler(us1_jp1_event_t const * event)
+void us1_jp1_event_handler(us1_jp1_event_t const *event)
 {
     static bool is_first_range_changed = true;
     ret_code_t err_code;
 
-    NRF_LOG_INFO("[US1_JP1_EVT] battery=%d, target=%d, position=%d, ret_code=%d, flags=0x%02X", event->mech_status.battery,
-            event->mech_status.target, event->mech_status.position, event->mech_status.ret_code, ((uint8_t*)&event->mech_status.ret_code)[1]);
+    NRF_LOG_INFO("[US1_JP1_EVT] battery=%d, target=%d, position=%d, ret_code=%d, flags=0x%02X",
+                 event->mech_status.battery,
+                 event->mech_status.target, event->mech_status.position, event->mech_status.ret_code,
+                 ((uint8_t *) &event->mech_status.ret_code)[1]);
 
     switch (event->history_type)
     {
-    case US1_JP1_HISTORY_TYPE_NONE:
-        break;
-    case US1_JP1_HISTORY_TYPE_AUTOLOCK:
-    case US1_JP1_HISTORY_TYPE_MANUAL_LOCKED:
-    case US1_JP1_HISTORY_TYPE_MANUAL_UNLOCKED:
-    case US1_JP1_HISTORY_TYPE_MANUAL_ELSE:
-    case US1_JP1_HISTORY_TYPE_DRIVE_LOCKED:
-    case US1_JP1_HISTORY_TYPE_DRIVE_UNLOCKED:
-        if (is_first_range_changed)
-        {
-            is_first_range_changed = false;
+        case US1_JP1_HISTORY_TYPE_NONE:
             break;
-        }
-        err_code = history_add_simple_type(HISTORY_TYPE_AUTOLOCK + event->history_type - US1_JP1_HISTORY_TYPE_AUTOLOCK);
-        if (err_code == NRF_SUCCESS)
-        {
-            NRF_LOG_DEBUG("[%s] history_add_simple_type(%d)=0", __func__, HISTORY_TYPE_AUTOLOCK + event->history_type - US1_JP1_HISTORY_TYPE_AUTOLOCK);
-        }
-        else
-        {
-            NRF_LOG_ERROR("[%s] history_add_simple_type(%d)=%d", __func__, HISTORY_TYPE_AUTOLOCK + event->history_type - US1_JP1_HISTORY_TYPE_AUTOLOCK, err_code);
-        }
-        break;
-    case US1_JP1_HISTORY_TYPE_DRIVE_FAILED:
-        err_code = history_add_drive_failed(event->mech_status.position, event->mech_status.ret_code, event->mech_status.in_lock_range, event->mech_status.in_unlock_range);
-        if (err_code == NRF_SUCCESS)
-        {
-            NRF_LOG_DEBUG("[%s] history_add_drive_failed()=0", __func__);
-        }
-        else
-        {
-            NRF_LOG_ERROR("[%s] history_add_drive_failed()=%d", __func__, err_code);
-        }
-        break;
-    default:
-        NRF_LOG_ERROR("[%s] unexpected history type: %d", __func__, event->history_type);
-        break;
+        case US1_JP1_HISTORY_TYPE_AUTOLOCK:
+        case US1_JP1_HISTORY_TYPE_MANUAL_LOCKED:
+        case US1_JP1_HISTORY_TYPE_MANUAL_UNLOCKED:
+        case US1_JP1_HISTORY_TYPE_MANUAL_ELSE:
+        case US1_JP1_HISTORY_TYPE_DRIVE_LOCKED:
+        case US1_JP1_HISTORY_TYPE_DRIVE_UNLOCKED:
+            if (is_first_range_changed)
+            {
+                is_first_range_changed = false;
+                break;
+            }
+            err_code = history_add_simple_type(
+                    HISTORY_TYPE_AUTOLOCK + event->history_type - US1_JP1_HISTORY_TYPE_AUTOLOCK);
+            if (err_code == NRF_SUCCESS)
+            {
+                NRF_LOG_DEBUG("[%s] history_add_simple_type(%d)=0", __func__,
+                              HISTORY_TYPE_AUTOLOCK + event->history_type - US1_JP1_HISTORY_TYPE_AUTOLOCK);
+            } else
+            {
+                NRF_LOG_ERROR("[%s] history_add_simple_type(%d)=%d", __func__,
+                              HISTORY_TYPE_AUTOLOCK + event->history_type - US1_JP1_HISTORY_TYPE_AUTOLOCK, err_code);
+            }
+            break;
+        case US1_JP1_HISTORY_TYPE_DRIVE_FAILED:
+            err_code = history_add_drive_failed(event->mech_status.position, event->mech_status.ret_code,
+                                                event->mech_status.in_lock_range, event->mech_status.in_unlock_range);
+            if (err_code == NRF_SUCCESS)
+            {
+                NRF_LOG_DEBUG("[%s] history_add_drive_failed()=0", __func__);
+            } else
+            {
+                NRF_LOG_ERROR("[%s] history_add_drive_failed()=%d", __func__, err_code);
+            }
+            break;
+        default:
+            NRF_LOG_ERROR("[%s] unexpected history type: %d", __func__, event->history_type);
+            break;
     }
     switch (event->history_type)
     {
-    case US1_JP1_HISTORY_TYPE_MANUAL_LOCKED:
-    case US1_JP1_HISTORY_TYPE_MANUAL_UNLOCKED:
-    case US1_JP1_HISTORY_TYPE_MANUAL_ELSE:
-        ble_ssm2_set_adv_lock_flags(event->mech_status.in_lock_range, event->mech_status.in_unlock_range, LOCK_STATUS_REASON_MANUAL);
-        break;
-    case US1_JP1_HISTORY_TYPE_DRIVE_LOCKED:
-    case US1_JP1_HISTORY_TYPE_DRIVE_UNLOCKED:
-    case US1_JP1_HISTORY_TYPE_DRIVE_FAILED:
-        ble_ssm2_set_adv_lock_flags(event->mech_status.in_lock_range, event->mech_status.in_unlock_range, event->mech_status.is_autolock_drive ? LOCK_STATUS_REASON_AUTO : LOCK_STATUS_REASON_CMD);
-        break;
-    default:
-        break;
+        case US1_JP1_HISTORY_TYPE_MANUAL_LOCKED:
+        case US1_JP1_HISTORY_TYPE_MANUAL_UNLOCKED:
+        case US1_JP1_HISTORY_TYPE_MANUAL_ELSE:
+            ble_ssm2_set_adv_lock_flags(event->mech_status.in_lock_range, event->mech_status.in_unlock_range,
+                                        LOCK_STATUS_REASON_MANUAL);
+            break;
+        case US1_JP1_HISTORY_TYPE_DRIVE_LOCKED:
+        case US1_JP1_HISTORY_TYPE_DRIVE_UNLOCKED:
+        case US1_JP1_HISTORY_TYPE_DRIVE_FAILED:
+            ble_ssm2_set_adv_lock_flags(event->mech_status.in_lock_range, event->mech_status.in_unlock_range,
+                                        event->mech_status.is_autolock_drive ? LOCK_STATUS_REASON_AUTO
+                                                                             : LOCK_STATUS_REASON_CMD);
+            break;
+        default:
+            break;
     }
 
     app.mech_status = event->mech_status;

@@ -82,6 +82,18 @@ SRC_FILES += \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_ble.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_soc.c \
+  $(SDK_ROOT)/components/ble_ssm2/ble_ssm2.c \
+  $(SDK_ROOT)/components/ssm4_hardware/us1_jp1.c \
+  $(SDK_ROOT)/components/ssm4_libraries/fdsx.c \
+  $(SDK_ROOT)/components/ssm4_version/version.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/cc310/cc310_backend_ecc.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/cc310_bl/cc310_bl_backend_ecc.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/mbedtls/mbedtls_backend_ecc.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_ecc.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecc.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/optiga/optiga_backend_ecc.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/nrf_sw/nrf_sw_backend_hash.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_rng.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -131,6 +143,20 @@ INC_FOLDERS += \
   $(SDK_ROOT)/external/fprintf \
   $(SDK_ROOT)/components/libraries/svc \
   $(SDK_ROOT)/components/libraries/log/src \
+  $(SDK_ROOT)/components/ble_ssm2 \
+  $(SDK_ROOT)/components/ssm4_hardware \
+  $(SDK_ROOT)/components/ssm4_libraries \
+  $(SDK_ROOT)/components/ssm4_version \
+  $(SDK_ROOT)/components/libraries/crypto \
+  $(SDK_ROOT)/components/libraries/crypto/backend/cc310 \
+  $(SDK_ROOT)/components/libraries/crypto/backend/cc310_bl \
+  $(SDK_ROOT)/components/libraries/crypto/backend/mbedtls \
+  $(SDK_ROOT)/components/libraries/crypto/backend/oberon \
+  $(SDK_ROOT)/components/libraries/crypto/backend/micro_ecc \
+  $(SDK_ROOT)/components/libraries/crypto/backend/optiga \
+  $(SDK_ROOT)/components/libraries/crypto/backend/nrf_sw \
+  $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw \
+
 
 # Libraries common to all targets
 LIB_FILES += \
@@ -143,7 +169,8 @@ OPT = -Os -g3
 # C flags common to all targets
 CFLAGS += $(OPT)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
-CFLAGS += -DBOARD_PCA10040
+#CFLAGS += -DBOARD_PCA10040
+CFLAGS += -DBOARD_SSM4_PRO
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DNRF52
@@ -229,9 +256,9 @@ $(foreach target, $(TARGETS), $(call define_target, $(target)))
 
 # Flash the program
 flash: default
-	@echo Flashing: $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex
-	nrfjprog -f nrf52 --program $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex --sectorerase
-	nrfjprog -f nrf52 --reset
+#	@echo Flashing: $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex
+#	nrfjprog -f nrf52 --program $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex --sectorerase
+#	nrfjprog -f nrf52 --reset
 
 # Flash softdevice
 flash_softdevice:

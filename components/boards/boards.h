@@ -83,6 +83,8 @@
   #include "custom_board.h"
 #elif defined(BOARD_SSM2_BIKE)
   #include "custom_board_ss2sw.h"
+#elif defined(BOARD_SSM4_PRO)
+  #include "custom_board_us1_jp1.h"
 #else
 #error "Board is not defined"
 
