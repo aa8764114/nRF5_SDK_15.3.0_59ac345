@@ -12,8 +12,11 @@
 
 #define NRF_LOG_MODULE_NAME     HW
 #define NRF_LOG_LEVEL           NRF_LOG_SEVERITY_INFO
+
 #include "nrf_log.h"
+
 NRF_LOG_MODULE_REGISTER();
+
 #include "nrf_log_ctrl.h"
 
 #include "misc.h"
@@ -114,7 +117,7 @@ STATIC_ASSERT(FSM_TIMEOUT_EMAGNET_OFF_ENGAGE >= 1);
 
 #define CALIB_INTERVAL_MS               (3 * 60 * 1000)    // 3 minutes (5 min doesn't work w/ APP_TIMER_V2 & default 300 sec APP_TIMER_SAFE_WINDOW_MS)
 #define CALIB_TEMPERATURE_CRITIRIA      (4)         // 1 degree
-#define BATTV_READING_INTERVAL_MS       (((uint32_t) 1) * 3 * 60 * 1000)   
+#define BATTV_READING_INTERVAL_MS       (((uint32_t) 1) * 3 * 60 * 1000)
 #define START_TIME_MS_BATT_GAUGE        (BATTV_READING_INTERVAL_MS * 10)
 #define MONTH_MS                        (((uint32_t) 1) * 30 * 24 * 60 * 60 * 1000)
 
@@ -152,44 +155,44 @@ typedef enum
 
 typedef enum
 {
-  PURPOSE_OTHERS,
-  PURPOSE_LOCK,
-  PURPOSE_UNLOCK,
+    PURPOSE_OTHERS,
+    PURPOSE_LOCK,
+    PURPOSE_UNLOCK,
 } move_purpose_e;
 
 typedef struct fsm_s
 {
-    uint16_t        state_counter;
-    int16_t         target;
-    int16_t         next_target;
-    int16_t         ending_target;
-    uint8_t         move_start_retry;
-    uint8_t         move_retry;
-    uint8_t         loosen_retry;
-    int8_t          motor_dir;
-    move_purpose_e  purpose;
-    move_purpose_e  next_purpose;
-    fsm_ret_code_e  ret_code;
-    fsm_state_e     state;
-    bool            ble_connected;
+    uint16_t state_counter;
+    int16_t target;
+    int16_t next_target;
+    int16_t ending_target;
+    uint8_t move_start_retry;
+    uint8_t move_retry;
+    uint8_t loosen_retry;
+    int8_t motor_dir;
+    move_purpose_e purpose;
+    move_purpose_e next_purpose;
+    fsm_ret_code_e ret_code;
+    fsm_state_e state;
+    bool ble_connected;
     //bool            clutch_engaged;
     //bool            clutch_attached;
     //bool            clutch_raw;
     //bool            clutch_action;
-    bool            clutch_failed;
-    bool            has_next_target;
-    bool            is_autolock_drive;
-    bool            next_is_autolock_drive;
+    bool clutch_failed;
+    bool has_next_target;
+    bool is_autolock_drive;
+    bool next_is_autolock_drive;
 } fsm_t;
 
 typedef struct range_detect_s
 {
-    uint64_t        last_report_time_ms;
-    uint64_t        temp_changed_time_ms;
-    bool            last_in_locked_range;       // last reported
-    bool            last_in_unlocked_range;
-    bool            temp_in_locked_range;       // current change
-    bool            temp_in_unlocked_range;
+    uint64_t last_report_time_ms;
+    uint64_t temp_changed_time_ms;
+    bool last_in_locked_range;       // last reported
+    bool last_in_unlocked_range;
+    bool temp_in_locked_range;       // current change
+    bool temp_in_unlocked_range;
 } range_detect_t;
 
 typedef struct position_calc_s
@@ -200,26 +203,26 @@ typedef struct position_calc_s
     int16_t     range;
     int16_t     range_2;
 #endif
-    int16_t     last_position;
-    int16_t     filtered_position;
-    int16_t     last_single_rev_position;
+    int16_t last_position;
+    int16_t filtered_position;
+    int16_t last_single_rev_position;
 #ifdef RESTRICT_POSITION_CHANGE
-    bool        limited;
+    bool limited;
 #endif
 } position_calc_t;
 
 typedef struct calibration_s
 {
-    uint32_t    last_calibration_time;
-    int32_t     last_calibration_temperature;
+    uint32_t last_calibration_time;
+    int32_t last_calibration_temperature;
 } calibration_t;
 
 typedef struct battery_s
 {
-    uint32_t    last_time;
-    int16_t     gauge_adc;
-    int16_t     current_adc;
-    bool        is_low_battery;
+    uint32_t last_time;
+    int16_t gauge_adc;
+    int16_t current_adc;
+    bool is_low_battery;
 } battery_t;
 
 static fsm_t fsm;
@@ -260,17 +263,19 @@ static bool pwm_drv_inited = false;
 APP_TIMER_DEF(calib_timer);
 
 #ifndef DIRECT_EVENT_HANDLER
+
 #include "nrf_atomic.h"
+
 static us1_jp1_event_t event_buffer[EVENT_BUFFER_CNT];
 static nrf_atomic_u32_t event_buffer_idx;
 
 
 typedef struct autolock_s
 {
-    bool        started;
-    bool        triggered;
-    uint16_t    second;
-    uint16_t    elapsed;
+    bool started;
+    bool triggered;
+    uint16_t second;
+    uint16_t elapsed;
 } autolock_t;
 static autolock_t autolock;
 APP_TIMER_DEF(autolock_timer);
@@ -280,30 +285,31 @@ static void set_fsm_next_target(int16_t next_target, move_purpose_e next_purpose
 {
     CRITICAL_REGION_ENTER();
 
-    if (fsm.has_next_target == false)
-    {
-        NRF_LOG_INFO("[%s] next_target: %d, next_purpose: %d, next_is_autolock_drive: %d", __func__, next_target,next_purpose,next_is_autolock_drive);
-        fsm.has_next_target = true;
-        fsm.next_target = next_target;
-        fsm.next_purpose = next_purpose;
-        fsm.next_is_autolock_drive = next_is_autolock_drive;
-    }
-    else if ((fsm.next_target != next_target) || (fsm.next_purpose != next_purpose) || (fsm.next_is_autolock_drive != next_is_autolock_drive))
-    {
-        NRF_LOG_WARNING("[%s] silently updated unstarted next_target (%d => %d)", __func__, fsm.next_target,  next_target);
-        fsm.next_target = next_target;
-        fsm.next_purpose = next_purpose;
-        fsm.next_is_autolock_drive = next_is_autolock_drive;
-    }
-    else
-    {
-        NRF_LOG_WARNING("[%s] silently ignored repeated next_target: %d", __func__, next_target);
-    }
+        if (fsm.has_next_target == false)
+        {
+            NRF_LOG_INFO("[%s] next_target: %d, next_purpose: %d, next_is_autolock_drive: %d", __func__, next_target,
+                         next_purpose, next_is_autolock_drive);
+            fsm.has_next_target = true;
+            fsm.next_target = next_target;
+            fsm.next_purpose = next_purpose;
+            fsm.next_is_autolock_drive = next_is_autolock_drive;
+        } else if ((fsm.next_target != next_target) || (fsm.next_purpose != next_purpose) ||
+                   (fsm.next_is_autolock_drive != next_is_autolock_drive))
+        {
+            NRF_LOG_WARNING("[%s] silently updated unstarted next_target (%d => %d)", __func__, fsm.next_target,
+                            next_target);
+            fsm.next_target = next_target;
+            fsm.next_purpose = next_purpose;
+            fsm.next_is_autolock_drive = next_is_autolock_drive;
+        } else
+        {
+            NRF_LOG_WARNING("[%s] silently ignored repeated next_target: %d", __func__, next_target);
+        }
 
     CRITICAL_REGION_EXIT();
 }
 
-static bool in_range(int16_t position, position_range_t const * p_range)
+static bool in_range(int16_t position, position_range_t const *p_range)
 {
     return (is_configured && position >= p_range->min && position <= p_range->max);
 };
@@ -328,14 +334,13 @@ static void autolock_timer_start(uint32_t second)
     autolock.started = true;
 }
 
-static void autolock_timer_handler(void * p_context)
+static void autolock_timer_handler(void *p_context)
 {
     if (autolock.second > autolock.elapsed + AUTOLOCK_TIMER_MAX_SECOND)
     {
         autolock.elapsed += AUTOLOCK_TIMER_MAX_SECOND;
         autolock_timer_start(autolock.second - autolock.elapsed);
-    }
-    else
+    } else
     {
         if (fsm.state == FSM_STATE_IDLE && is_configured)
         {
@@ -382,16 +387,15 @@ ret_code_t us1_jp1_update_autolock(uint16_t second)
             if (!second)
             {
                 autolock_timer_stop();
-            }
-            else if (second != autolock.second)
+            } else if (second != autolock.second)
             {
                 autolock_timer_stop();
                 autolock_timer_start(second);
             }
-        }
-        else
+        } else
         {
-            if (second && fsm.state == FSM_STATE_IDLE && fsm.target == INT16_MIN && !in_range(position_calc.filtered_position, &conf.lock_range))
+            if (second && fsm.state == FSM_STATE_IDLE && fsm.target == INT16_MIN &&
+                !in_range(position_calc.filtered_position, &conf.lock_range))
             {
                 autolock_timer_start(second);
             }
@@ -402,13 +406,14 @@ ret_code_t us1_jp1_update_autolock(uint16_t second)
     return NRF_SUCCESS;
 }
 
-static void event_handler(us1_jp1_event_t const * event)
+static void event_handler(us1_jp1_event_t const *event)
 {
-    uint32_t idx = nrf_atomic_u32_fetch_add(&event_buffer_idx, 1) & (EVENT_BUFFER_CNT-1);
+    uint32_t idx = nrf_atomic_u32_fetch_add(&event_buffer_idx, 1) & (EVENT_BUFFER_CNT - 1);
 
     event_buffer[idx] = *event;
     NVIC_SetPendingIRQ(EVENT_IRQn);
 }
+
 #endif
 
 static void range_detect_init(int16_t position)
@@ -418,8 +423,6 @@ static void range_detect_init(int16_t position)
 
 static void init_rtc(void)
 {
-    ret_code_t err_code;
-
     nrf_rtc_prescaler_set(RTC_REG, RTC_PRESCALER);
     NRFX_IRQ_DISABLE(RTC_IRQ);
     rtc_ms = FSM_INTERVAL_SLOW_MS;
@@ -456,20 +459,20 @@ static bool switch_to_next_target(void)
 
     CRITICAL_REGION_ENTER();
 
-    if (fsm.has_next_target)
-    {
-        end_target();
-        fsm.target = fsm.next_target;
-        fsm.purpose = fsm.next_purpose;
-        fsm.is_autolock_drive = fsm.next_is_autolock_drive;
-        fsm.has_next_target = false;
+        if (fsm.has_next_target)
+        {
+            end_target();
+            fsm.target = fsm.next_target;
+            fsm.purpose = fsm.next_purpose;
+            fsm.is_autolock_drive = fsm.next_is_autolock_drive;
+            fsm.has_next_target = false;
 
-        fsm.state_counter = 0;
-        fsm.move_start_retry = 0;
-        fsm.move_retry = 0;
-        fsm.loosen_retry = 0;
-        ret_val = true;
-    }
+            fsm.state_counter = 0;
+            fsm.move_start_retry = 0;
+            fsm.move_retry = 0;
+            fsm.loosen_retry = 0;
+            ret_val = true;
+        }
 
     CRITICAL_REGION_EXIT();
 
@@ -487,14 +490,13 @@ static int16_t position_filter(int16_t position)
     {
         int i;
 
-        for (i=0; i<ARRAY_SIZE(ref); i++)
+        for (i = 0; i < ARRAY_SIZE(ref); i++)
         {
             ref[i] = position;
         }
         ref_sum = position * POSITION_FILTER_REF_COUNT;
         return position;
-    }
-    else
+    } else
     {
         ref_sum += (position - ref[ref_idx]);
         ref[ref_idx] = position;
@@ -509,14 +511,16 @@ static void init_ppi(void)
 
     err_code = nrfx_ppi_channel_alloc(&ppi_ch_on_rtc_adc);
     APP_ERROR_CHECK(err_code);
-    err_code = nrfx_ppi_channel_assign(ppi_ch_on_rtc_adc, (uint32_t)&RTC_REG->EVENTS_COMPARE[0], (uint32_t)&RTC_REG->TASKS_CLEAR);
+    err_code = nrfx_ppi_channel_assign(ppi_ch_on_rtc_adc, (uint32_t) &RTC_REG->EVENTS_COMPARE[0],
+                                       (uint32_t) &RTC_REG->TASKS_CLEAR);
     APP_ERROR_CHECK(err_code);
-    err_code = nrfx_ppi_channel_fork_assign(ppi_ch_on_rtc_adc, (uint32_t)&NRF_SAADC->TASKS_START);
+    err_code = nrfx_ppi_channel_fork_assign(ppi_ch_on_rtc_adc, (uint32_t) &NRF_SAADC->TASKS_START);
     APP_ERROR_CHECK(err_code);
 
     err_code = nrfx_ppi_channel_alloc(&ppi_ch_on_adc_calib);
     APP_ERROR_CHECK(err_code);
-    err_code = nrfx_ppi_channel_assign(ppi_ch_on_adc_calib, (uint32_t)&NRF_SAADC->EVENTS_CALIBRATEDONE, (uint32_t)&NRF_SAADC->TASKS_STOP);
+    err_code = nrfx_ppi_channel_assign(ppi_ch_on_adc_calib, (uint32_t) &NRF_SAADC->EVENTS_CALIBRATEDONE,
+                                       (uint32_t) &NRF_SAADC->TASKS_STOP);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -563,8 +567,7 @@ static void saadc_setup_measure_pos_batt(void)
     {
         nrf_gpio_cfg_output(GPIO_PIN_BATTERY_SW);
         nrf_gpio_pin_set(GPIO_PIN_BATTERY_SW);
-    }
-    else
+    } else
     {
         nrf_gpio_cfg_default(GPIO_PIN_BATTERY_SW);
     }
@@ -589,8 +592,7 @@ static void saadc_setup_measure_batt_only(void)
     {
         nrf_gpio_cfg_output(GPIO_PIN_BATTERY_SW);
         nrf_gpio_pin_set(GPIO_PIN_BATTERY_SW);
-    }
-    else
+    } else
     {
         nrf_gpio_cfg_default(GPIO_PIN_BATTERY_SW);
     }
@@ -601,8 +603,7 @@ static void saadc_setup_for_next(void)
     if (need_battery)
     {
         saadc_setup_position_and_battery();
-    }
-    else
+    } else
     {
         saadc_setup_position_only();
     }
@@ -611,14 +612,14 @@ static void saadc_setup_for_next(void)
 static void init_saadc(void)
 {
     const nrf_saadc_channel_config_t conf = {
-            .resistor_p = NRF_SAADC_RESISTOR_DISABLED,      \
-            .resistor_n = NRF_SAADC_RESISTOR_DISABLED,      \
-            .gain       = NRF_SAADC_GAIN1_4,                \
-            .reference  = NRF_SAADC_REFERENCE_VDD4,     \
-            .acq_time   = NRF_SAADC_ACQTIME_15US,           \
-            .mode       = NRF_SAADC_MODE_SINGLE_ENDED,      \
-            .burst      = NRF_SAADC_BURST_DISABLED,         \
-            .pin_p      = NRF_SAADC_INPUT_AIN2,       \
+            .resistor_p = NRF_SAADC_RESISTOR_DISABLED, \
+            .resistor_n = NRF_SAADC_RESISTOR_DISABLED, \
+            .gain       = NRF_SAADC_GAIN1_4, \
+            .reference  = NRF_SAADC_REFERENCE_VDD4, \
+            .acq_time   = NRF_SAADC_ACQTIME_15US, \
+            .mode       = NRF_SAADC_MODE_SINGLE_ENDED, \
+            .burst      = NRF_SAADC_BURST_DISABLED, \
+            .pin_p      = NRF_SAADC_INPUT_AIN2, \
             .pin_n      = NRF_SAADC_INPUT_DISABLED
     };
 
@@ -701,87 +702,80 @@ static void motor_alternate(void)
 
 void mdrv_clutch_pwm(uint32_t pwm_frq, uint16_t pwm_dutyratio)
 {
-    uint32_t  min_pwm_base_frq;
-    uint32_t  cfg_pwm_base_frq;
-    uint16_t  cfg_top_value;
-	
+    uint32_t min_pwm_base_frq;
+    uint32_t cfg_pwm_base_frq;
+    uint16_t cfg_top_value;
+
     static nrf_drv_pwm_config_t config0 =
-    {
-        .output_pins =
-        {
-            GPIO_PIN_DRV8838_CLUTCH_EN,           // channel 0
-            NRF_DRV_PWM_PIN_NOT_USED,             // channel 1
-            NRF_DRV_PWM_PIN_NOT_USED,             // channel 2
-            NRF_DRV_PWM_PIN_NOT_USED,             // channel 3
-        },
-        .irq_priority = 7,
-        .base_clock   = NRF_PWM_CLK_16MHz,
-        .count_mode   = NRF_PWM_MODE_UP,
-        .top_value    = 255,
-        .load_mode    = PWM_DECODER_LOAD_Individual,
-        .step_mode    = NRF_PWM_STEP_AUTO
-    };	
+            {
+                    .output_pins =
+                            {
+                                    GPIO_PIN_DRV8838_CLUTCH_EN,           // channel 0
+                                    NRF_DRV_PWM_PIN_NOT_USED,             // channel 1
+                                    NRF_DRV_PWM_PIN_NOT_USED,             // channel 2
+                                    NRF_DRV_PWM_PIN_NOT_USED,             // channel 3
+                            },
+                    .irq_priority = 7,
+                    .base_clock   = NRF_PWM_CLK_16MHz,
+                    .count_mode   = NRF_PWM_MODE_UP,
+                    .top_value    = 255,
+                    .load_mode    = PWM_DECODER_LOAD_Individual,
+                    .step_mode    = NRF_PWM_STEP_AUTO
+            };
 
     static nrf_pwm_values_individual_t seq_values[] = {0, 0, 0, 0};
     static nrf_pwm_sequence_t const seq =
-	{
-        .values.p_individual = seq_values,
-        .length     = NRF_PWM_VALUES_LENGTH(seq_values),
-        .repeats    = 0,
-        .end_delay  = 0
-	};	
-	
+            {
+                    .values.p_individual = seq_values,
+                    .length     = NRF_PWM_VALUES_LENGTH(seq_values),
+                    .repeats    = 0,
+                    .end_delay  = 0
+            };
+
     min_pwm_base_frq = pwm_frq * 100;
     if (min_pwm_base_frq <= 125000)
     {
-      cfg_pwm_base_frq = NRF_PWM_CLK_125kHz;
-      cfg_top_value = 125000 / pwm_frq;
+        cfg_pwm_base_frq = NRF_PWM_CLK_125kHz;
+        cfg_top_value = 125000 / pwm_frq;
+    } else if (min_pwm_base_frq <= 250000)
+    {
+        cfg_pwm_base_frq = NRF_PWM_CLK_250kHz;
+        cfg_top_value = 250000 / pwm_frq;
+    } else if (min_pwm_base_frq <= 500000)
+    {
+        cfg_pwm_base_frq = NRF_PWM_CLK_500kHz;
+        cfg_top_value = 500000 / pwm_frq;
+    } else if (min_pwm_base_frq <= 1000000)
+    {
+        cfg_pwm_base_frq = NRF_PWM_CLK_1MHz;
+        cfg_top_value = 1000000 / pwm_frq;
+    } else if (min_pwm_base_frq <= 2000000)
+    {
+        cfg_pwm_base_frq = NRF_PWM_CLK_2MHz;
+        cfg_top_value = 2000000 / pwm_frq;
+    } else if (min_pwm_base_frq <= 4000000)
+    {
+        cfg_pwm_base_frq = NRF_PWM_CLK_4MHz;
+        cfg_top_value = 4000000 / pwm_frq;
+    } else if (min_pwm_base_frq <= 8000000)
+    {
+        cfg_pwm_base_frq = NRF_PWM_CLK_8MHz;
+        cfg_top_value = 8000000 / pwm_frq;
+    } else //if (min_pwm_base_frq <= 16000000)
+    {
+        cfg_pwm_base_frq = NRF_PWM_CLK_16MHz;
+        cfg_top_value = 16000000 / pwm_frq;
     }
-    else if (min_pwm_base_frq <= 250000)
-    {
-      cfg_pwm_base_frq = NRF_PWM_CLK_250kHz;
-      cfg_top_value = 250000 / pwm_frq;
-    }
-    else if (min_pwm_base_frq <= 500000)
-    {
-      cfg_pwm_base_frq = NRF_PWM_CLK_500kHz;
-      cfg_top_value = 500000 / pwm_frq;
-    }	
-    else if (min_pwm_base_frq <= 1000000)
-    {
-      cfg_pwm_base_frq = NRF_PWM_CLK_1MHz;
-      cfg_top_value = 1000000 / pwm_frq;
-    }	
-    else if (min_pwm_base_frq <= 2000000)
-    {
-      cfg_pwm_base_frq = NRF_PWM_CLK_2MHz;
-      cfg_top_value = 2000000 / pwm_frq;
-    }	
-    else if (min_pwm_base_frq <= 4000000)
-    {
-      cfg_pwm_base_frq = NRF_PWM_CLK_4MHz;
-      cfg_top_value = 4000000 / pwm_frq;
-    }	
-    else if (min_pwm_base_frq <= 8000000)
-    {
-      cfg_pwm_base_frq = NRF_PWM_CLK_8MHz;
-      cfg_top_value = 8000000 / pwm_frq;
-    }	
-    else //if (min_pwm_base_frq <= 16000000)
-    {
-      cfg_pwm_base_frq = NRF_PWM_CLK_16MHz;
-      cfg_top_value = 16000000 / pwm_frq;
-    }
-	
+
     config0.base_clock = cfg_pwm_base_frq;
     config0.top_value = cfg_top_value;
-	
+
     if (pwm_drv_inited)
-    { 
+    {
         nrf_drv_pwm_uninit(&m_pwm0);
         pwm_drv_inited = false;
     }
-	
+
     nrf_gpio_pin_set(GPIO_PIN_DRV8838_CLUTCH_PH);
     nrf_gpio_pin_set(GPIO_PIN_DRV8838_CLUTCH_SLEEP);
     nrf_gpio_pin_clear(GPIO_PIN_DRV8838_CLUTCH_EN);
@@ -791,28 +785,28 @@ void mdrv_clutch_pwm(uint32_t pwm_frq, uint16_t pwm_dutyratio)
         APP_ERROR_CHECK(nrf_drv_pwm_init(&m_pwm0, &config0, NULL));
         pwm_drv_inited = true;
     }
-	
+
     {
         uint32_t cfg_duty_interval;
-		
-	if (pwm_dutyratio >= 100)
-            cfg_duty_interval = cfg_top_value + 1;
-	else 
-            cfg_duty_interval = (uint32_t) cfg_top_value * pwm_dutyratio / 100 ;
-		
-	seq_values[0].channel_0 = cfg_duty_interval | 0x8000;
-    }	
 
-    nrf_drv_pwm_simple_playback(&m_pwm0, &seq, 1, NRF_DRV_PWM_FLAG_LOOP);		
+        if (pwm_dutyratio >= 100)
+            cfg_duty_interval = cfg_top_value + 1;
+        else
+            cfg_duty_interval = (uint32_t) cfg_top_value * pwm_dutyratio / 100;
+
+        seq_values[0].channel_0 = cfg_duty_interval | 0x8000;
+    }
+
+    nrf_drv_pwm_simple_playback(&m_pwm0, &seq, 1, NRF_DRV_PWM_FLAG_LOOP);
 }
 
 
 static void clutch_stop(void)
 {
     NRF_LOG_DEBUG("[%s]", __func__);
-    mdrv_clutch_pwm(10000,0);
+    mdrv_clutch_pwm(10000, 0);
     if (pwm_drv_inited)
-    { 
+    {
         nrf_drv_pwm_uninit(&m_pwm0);
         pwm_drv_inited = false;
     }
@@ -833,8 +827,7 @@ static void clutch_hold_movestart(void)
     if (PWM_RATIO_CLUTCH_MOVESTART == 0)
     {
         clutch_stop();
-    }
-    else
+    } else
     {
         mdrv_clutch_pwm(10000, PWM_RATIO_CLUTCH_MOVESTART);
     }
@@ -846,8 +839,7 @@ static void clutch_hold_moving(void)
     if (PWM_RATIO_CLUTCH_MOVING == 0)
     {
         clutch_stop();
-    }
-    else
+    } else
     {
         mdrv_clutch_pwm(10000, PWM_RATIO_CLUTCH_MOVING);
     }
@@ -892,14 +884,12 @@ static void update_fsm(fsm_state_e next_state)
             {
                 cc = RTC_TICK_MEDIUM;
                 ms = FSM_INTERVAL_MEDIUM_MS;
-            }
-            else
+            } else
             {
                 cc = RTC_TICK_SLOW;
                 ms = FSM_INTERVAL_SLOW_MS;
             }
-        }
-        else
+        } else
         {
             cc = RTC_TICK_FAST;
             ms = FSM_INTERVAL_FAST_MS;
@@ -913,8 +903,7 @@ static void update_fsm(fsm_state_e next_state)
 
         fsm.state_counter = 0;
         fsm.state = next_state;
-    }
-    else
+    } else
     {
         fsm.state_counter++;
     }
@@ -935,20 +924,20 @@ static int16_t guess_position(void)
             {
                 equinox2 = equinox1;
                 equinox1 -= 512;
-            }
-            else
+            } else
             {
                 equinox2 = equinox1 + 512;
             }
 
             NRF_LOG_INFO("[%s] position: lock=%d, unlock=%d", __func__, conf.lock, conf.unlock);
-            NRF_LOG_INFO("[%s] angle: lock=%d, unlock=%d, equinox1=%d, equinox2=%d", __func__, angle_lock, POSITION_TO_ANGLE(conf.unlock), equinox1, equinox2);
+            NRF_LOG_INFO("[%s] angle: lock=%d, unlock=%d, equinox1=%d, equinox2=%d", __func__, angle_lock,
+                         POSITION_TO_ANGLE(conf.unlock), equinox1, equinox2);
 
-            if ((equinox2 > position_calc.last_single_rev_position) && (position_calc.last_single_rev_position >= equinox1))
+            if ((equinox2 > position_calc.last_single_rev_position) &&
+                (position_calc.last_single_rev_position >= equinox1))
             {
                 ref_position = ((equinox2 > angle_lock) && (angle_lock >= equinox1)) ? conf.lock : conf.unlock;
-            }
-            else
+            } else
             {
                 ref_position = ((equinox2 > angle_lock) && (angle_lock >= equinox1)) ? conf.unlock : conf.lock;
             }
@@ -958,8 +947,7 @@ static int16_t guess_position(void)
         if (position_calc.last_position >= ref_position + 512)
         {
             position_calc.last_position -= 1024;
-        }
-        else if (position_calc.last_position < ref_position - 512)
+        } else if (position_calc.last_position < ref_position - 512)
         {
             position_calc.last_position += 1024;
         }
@@ -969,6 +957,7 @@ static int16_t guess_position(void)
 }
 
 #define LOOSEN_DELAY            (4)         // unit: FSM period
+
 static void motor_fsm(int16_t position)
 {
     static bool temp_in_lock_range;
@@ -986,366 +975,349 @@ static void motor_fsm(int16_t position)
             (       ( fsm.purpose == PURPOSE_LOCK && diff_abs < MAX_POSITION_TOLERANCE_LOCK)      \
                 ||  (fsm.purpose == PURPOSE_UNLOCK && diff_abs < MAX_POSITION_TOLERANCE_UNLOCK)   \
                 ||  (fsm.purpose == PURPOSE_OTHERS && diff_abs < MAX_POSITION_TOLERANCE_OTHERS)   \
-            )   
+            )
 
 
-    NRF_LOG_DEBUG("[%s] state=%d, cnt=%d, target=%d (next=%d), position=%d", __func__, fsm.state, fsm.state_counter, fsm.target, fsm.has_next_target ? fsm.next_target : INT16_MIN+1, position);
+    NRF_LOG_DEBUG("[%s] state=%d, cnt=%d, target=%d (next=%d), position=%d", __func__, fsm.state, fsm.state_counter,
+                  fsm.target, fsm.has_next_target ? fsm.next_target : INT16_MIN + 1, position);
 
     switch (fsm.state)
     {
-    case FSM_STATE_INIT:
-        position = guess_position();
-        memset(&fsm, 0, sizeof(fsm));
-        next_state = FSM_STATE_IDLE;
-        fsm.target = INT16_MIN;
-        fsm.purpose = PURPOSE_OTHERS;
-        range_detect_init(position);
-        temp_in_lock_range = false;
-        temp_in_unlock_range = false;
-        temp_range_time = 0;
-        break;
-    case FSM_STATE_IDLE:
-        switched_target = switch_to_next_target();
-        NRF_LOG_DEBUG("[after_swi] state=%d, cnt=%d, target=%d (next=%d), position=%d", fsm.state, fsm.state_counter, fsm.target, fsm.has_next_target ? fsm.next_target : INT16_MIN+1, position);
-        if (has_target())
+        case FSM_STATE_INIT:
+            position = guess_position();
+            memset(&fsm, 0, sizeof(fsm));
+            next_state = FSM_STATE_IDLE;
+            fsm.target = INT16_MIN;
+            fsm.purpose = PURPOSE_OTHERS;
+            range_detect_init(position);
+            temp_in_lock_range = false;
+            temp_in_unlock_range = false;
+            temp_range_time = 0;
+            break;
+        case FSM_STATE_IDLE:
+            switched_target = switch_to_next_target();
+            NRF_LOG_DEBUG("[after_swi] state=%d, cnt=%d, target=%d (next=%d), position=%d", fsm.state,
+                          fsm.state_counter, fsm.target, fsm.has_next_target ? fsm.next_target : INT16_MIN + 1,
+                          position);
+            if (has_target())
+            {
+                CALC_DIFF();
+                if (diff_abs < MAX_POSITION_TOLERANCE)
+                {
+                    ending_target(FSM_RET_CODE_SUCCESS);
+                } else
+                {
+                    next_state = FSM_STATE_ENGAGE;
+                    fsm.move_start_retry = 0;
+                    fsm.move_retry = 0;
+                }
+            }
+            //else if (fsm.clutch_engaged)
+            //{
+            //    next_state = FSM_STATE_DETACH;
+            //}
+            break;
+        case FSM_STATE_ENGAGE:
         {
-            CALC_DIFF();
-            if (diff_abs < MAX_POSITION_TOLERANCE)
-            {
-                ending_target(FSM_RET_CODE_SUCCESS);
-            }
-            else
-            {
-                next_state = FSM_STATE_ENGAGE;
-                fsm.move_start_retry = 0;
-                fsm.move_retry = 0;
-            }
-        }
-        //else if (fsm.clutch_engaged)
-        //{
-        //    next_state = FSM_STATE_DETACH;
-        //}
-        break;
-    case FSM_STATE_ENGAGE:
-    {
-        if (!has_target())
-        {
-            clutch_stop();
-            next_state = FSM_STATE_DETACH;
-        }
-        else if (fsm.state_counter == 0)
-        {
-            if (FSM_TIMEOUT_EMAGNET_OFF_ENGAGE == 0)
-            {
-                if (FSM_TIMEOUT_EMAGNET_ON_ENGAGE == 0)
-                {
-                    clutch_stop();
-                    next_state = FSM_STATE_MOVE_START;
-                }
-                else if (FSM_TIMEOUT_EMAGNET_ON_ENGAGE == 1)
-                {
-                    clutch_engage();
-                    next_state = FSM_STATE_MOVE_START;
-                }
-                else  // FSM_TIMEOUT_EMAGNET_ON_ENGAGE >= 2
-                {
-                     clutch_engage();
-                }
-            }
-            else if (FSM_TIMEOUT_EMAGNET_OFF_ENGAGE == 1)
-            {
-                if (FSM_TIMEOUT_EMAGNET_ON_ENGAGE == 0)
-                {
-                    clutch_stop();
-                    next_state = FSM_STATE_MOVE_START;
-                }
-                else // FSM_TIMEOUT_EMAGNET_ON_ENGAGE >= 1
-                {
-                    clutch_stop();
-                }
-            }
-            else //FSM_TIMEOUT_EMAGNET_OFF_ENGAGE >= 2
+            if (!has_target())
             {
                 clutch_stop();
-            }
-        }
-        else 
-        {
-            if (FSM_TIMEOUT_EMAGNET_OFF_ENGAGE == 0)
-            {
-                if (fsm.state_counter + 1 == FSM_TIMEOUT_EMAGNET_ON_ENGAGE)
-                {
-                    next_state = FSM_STATE_MOVE_START;
-                }
-            }
-            if (FSM_TIMEOUT_EMAGNET_ON_ENGAGE == 0)
-            {
-                if (fsm.state_counter + 1 == FSM_TIMEOUT_EMAGNET_OFF_ENGAGE)
-                {
-                    next_state = FSM_STATE_MOVE_START;
-                }
-            }
-            else 
-            {
-                if (fsm.state_counter  == FSM_TIMEOUT_EMAGNET_OFF_ENGAGE )
-                {
-                    clutch_engage();
-
-                }
-                if (fsm.state_counter  == FSM_TIMEOUT_EMAGNET_OFF_ENGAGE + FSM_TIMEOUT_EMAGNET_ON_ENGAGE -1 )
-                {
-                    next_state = FSM_STATE_MOVE_START;
-                }
-            }
-        }
-        break;
-    }
-    case FSM_STATE_MOVE_START:
-        if (has_target())
-        {
-            static int32_t initial_diff = INT32_MIN;
-
-            CALC_DIFF();
-
-            if (IN_TARGET_RANGE() && !position_calc.limited)
-            {
-                motor_brake();
                 next_state = FSM_STATE_DETACH;
-                ending_target(FSM_RET_CODE_SUCCESS);
-            }
-            else if (fsm.state_counter == 0)
+            } else if (fsm.state_counter == 0)
             {
-                clutch_hold_movestart();
-                if (diff > 0)
+                if (FSM_TIMEOUT_EMAGNET_OFF_ENGAGE == 0)
                 {
-                    motor_forward();
-                }
-                else
+                    if (FSM_TIMEOUT_EMAGNET_ON_ENGAGE == 0)
+                    {
+                        clutch_stop();
+                        next_state = FSM_STATE_MOVE_START;
+                    } else if (FSM_TIMEOUT_EMAGNET_ON_ENGAGE == 1)
+                    {
+                        clutch_engage();
+                        next_state = FSM_STATE_MOVE_START;
+                    } else  // FSM_TIMEOUT_EMAGNET_ON_ENGAGE >= 2
+                    {
+                        clutch_engage();
+                    }
+                } else if (FSM_TIMEOUT_EMAGNET_OFF_ENGAGE == 1)
                 {
-                    motor_reverse();
+                    if (FSM_TIMEOUT_EMAGNET_ON_ENGAGE == 0)
+                    {
+                        clutch_stop();
+                        next_state = FSM_STATE_MOVE_START;
+                    } else // FSM_TIMEOUT_EMAGNET_ON_ENGAGE >= 1
+                    {
+                        clutch_stop();
+                    }
+                } else //FSM_TIMEOUT_EMAGNET_OFF_ENGAGE >= 2
+                {
+                    clutch_stop();
                 }
-                initial_diff = diff;
-            }
-            else if ((IN_TARGET_RANGE() || diff * fsm.motor_dir < 0) && !position_calc.limited)
+            } else
             {
-                motor_brake();
-                next_state = FSM_STATE_DETACH;
-                ending_target(FSM_RET_CODE_SUCCESS);
+                if (FSM_TIMEOUT_EMAGNET_OFF_ENGAGE == 0)
+                {
+                    if (fsm.state_counter + 1 == FSM_TIMEOUT_EMAGNET_ON_ENGAGE)
+                    {
+                        next_state = FSM_STATE_MOVE_START;
+                    }
+                }
+                if (FSM_TIMEOUT_EMAGNET_ON_ENGAGE == 0)
+                {
+                    if (fsm.state_counter + 1 == FSM_TIMEOUT_EMAGNET_OFF_ENGAGE)
+                    {
+                        next_state = FSM_STATE_MOVE_START;
+                    }
+                } else
+                {
+                    if (fsm.state_counter == FSM_TIMEOUT_EMAGNET_OFF_ENGAGE)
+                    {
+                        clutch_engage();
+
+                    }
+                    if (fsm.state_counter == FSM_TIMEOUT_EMAGNET_OFF_ENGAGE + FSM_TIMEOUT_EMAGNET_ON_ENGAGE - 1)
+                    {
+                        next_state = FSM_STATE_MOVE_START;
+                    }
+                }
             }
-            else if (diff * fsm.motor_dir <= initial_diff * fsm.motor_dir - FSM_MOVE_START_CRITIRIA)
+            break;
+        }
+        case FSM_STATE_MOVE_START:
+            if (has_target())
             {
-                //clutch_stop();
-                //fsm.clutch_attached = true;
-                clutch_hold_moving();
-                next_state = FSM_STATE_MOVE;
-            }
-            else if (fsm.state_counter > FSM_TIMEOUT_MOVE_START)
-            {
-                if (fsm.move_start_retry >= FSM_MOVE_START_RETRY_LIMIT)
+                static int32_t initial_diff = INT32_MIN;
+
+                CALC_DIFF();
+
+                if (IN_TARGET_RANGE() && !position_calc.limited)
                 {
                     motor_brake();
-                    clutch_stop();
                     next_state = FSM_STATE_DETACH;
-                    ending_target(FSM_RET_CODE_FAIL_MOVE_START);
-                }
-                else
+                    ending_target(FSM_RET_CODE_SUCCESS);
+                } else if (fsm.state_counter == 0)
                 {
-                    motor_stop();
-                    fsm.move_start_retry++;
-                    next_state = FSM_STATE_ENGAGE;
-                    NRF_LOG_WARNING("[%s] fsm.move_start_retry=%d", __func__, fsm.move_start_retry);
+                    clutch_hold_movestart();
+                    if (diff > 0)
+                    {
+                        motor_forward();
+                    } else
+                    {
+                        motor_reverse();
+                    }
+                    initial_diff = diff;
+                } else if ((IN_TARGET_RANGE() || diff * fsm.motor_dir < 0) && !position_calc.limited)
+                {
+                    motor_brake();
+                    next_state = FSM_STATE_DETACH;
+                    ending_target(FSM_RET_CODE_SUCCESS);
+                } else if (diff * fsm.motor_dir <= initial_diff * fsm.motor_dir - FSM_MOVE_START_CRITIRIA)
+                {
+                    //clutch_stop();
+                    //fsm.clutch_attached = true;
+                    clutch_hold_moving();
+                    next_state = FSM_STATE_MOVE;
+                } else if (fsm.state_counter > FSM_TIMEOUT_MOVE_START)
+                {
+                    if (fsm.move_start_retry >= FSM_MOVE_START_RETRY_LIMIT)
+                    {
+                        motor_brake();
+                        clutch_stop();
+                        next_state = FSM_STATE_DETACH;
+                        ending_target(FSM_RET_CODE_FAIL_MOVE_START);
+                    } else
+                    {
+                        motor_stop();
+                        fsm.move_start_retry++;
+                        next_state = FSM_STATE_ENGAGE;
+                        NRF_LOG_WARNING("[%s] fsm.move_start_retry=%d", __func__, fsm.move_start_retry);
+                    }
                 }
-            }
-        }
-        else
-        {
-            motor_brake();
-            next_state = FSM_STATE_DETACH;
-        }
-        break;
-    case FSM_STATE_MOVE:
-        switched_target = switch_to_next_target();
-        NRF_LOG_DEBUG("[after_swi] state=%d, cnt=%d, target=%d (next=%d), position=%d", fsm.state, fsm.state_counter, fsm.target, fsm.has_next_target ? fsm.next_target : INT16_MIN+1, position);
-        if (switched_target)
-        {
-            motor_brake();
-            next_state = FSM_STATE_MOVE_START;
-        }
-        else if (has_target())
-        {
-            static int16_t checkpoint_diff = 0;
-            static uint16_t checkpoint_counter = 0;
-            int32_t diff_change;
-
-            CALC_DIFF();
-            diff_change = checkpoint_diff * fsm.motor_dir - diff * fsm.motor_dir;
-
-            NRF_LOG_DEBUG("[FSM_STATE_MOVE] checkpoint_diff=%d, checkpoint_counter=%d, diff=%d, fsm.motor_dir=%d", checkpoint_diff, checkpoint_counter, diff, fsm.motor_dir);
-
-            if ((IN_TARGET_RANGE() || diff * fsm.motor_dir < 0) && !position_calc.limited)
+            } else
             {
                 motor_brake();
                 next_state = FSM_STATE_DETACH;
-                ending_target(FSM_RET_CODE_SUCCESS);
             }
+            break;
+        case FSM_STATE_MOVE:
+            switched_target = switch_to_next_target();
+            NRF_LOG_DEBUG("[after_swi] state=%d, cnt=%d, target=%d (next=%d), position=%d", fsm.state,
+                          fsm.state_counter, fsm.target, fsm.has_next_target ? fsm.next_target : INT16_MIN + 1,
+                          position);
+            if (switched_target)
+            {
+                motor_brake();
+                next_state = FSM_STATE_MOVE_START;
+            } else if (has_target())
+            {
+                static int16_t checkpoint_diff = 0;
+                static uint16_t checkpoint_counter = 0;
+                int32_t diff_change;
+
+                CALC_DIFF();
+                diff_change = checkpoint_diff * fsm.motor_dir - diff * fsm.motor_dir;
+
+                NRF_LOG_DEBUG("[FSM_STATE_MOVE] checkpoint_diff=%d, checkpoint_counter=%d, diff=%d, fsm.motor_dir=%d",
+                              checkpoint_diff, checkpoint_counter, diff, fsm.motor_dir);
+
+                if ((IN_TARGET_RANGE() || diff * fsm.motor_dir < 0) && !position_calc.limited)
+                {
+                    motor_brake();
+                    next_state = FSM_STATE_DETACH;
+                    ending_target(FSM_RET_CODE_SUCCESS);
+                }
 #ifdef WORKAROUND_POSITION_SENSOR_NOISE_FOR_MOVE_CHECKPOINT
 #define LINEAR_CHECKPOINT_CHANGE_LIMIT (3 * FSM_MOVE_CRITIRIA)
 #define MAX_CHECKPOINT_CHANGE          (5 * FSM_MOVE_CRITIRIA)
-            else if (fsm.state_counter == 0)
-            {
-                checkpoint_diff = diff;
-                checkpoint_counter = fsm.state_counter;
-            }
-            else if (diff_change > FSM_MOVE_CRITIRIA)
-            {
-                checkpoint_diff = diff_change <= LINEAR_CHECKPOINT_CHANGE_LIMIT ? diff :
-                        checkpoint_diff - (MAX_CHECKPOINT_CHANGE - (MAX_CHECKPOINT_CHANGE - LINEAR_CHECKPOINT_CHANGE_LIMIT) * LINEAR_CHECKPOINT_CHANGE_LIMIT / diff_change) * fsm.motor_dir;
-                checkpoint_counter = fsm.state_counter;
-            }
+                else if (fsm.state_counter == 0)
+                {
+                    checkpoint_diff = diff;
+                    checkpoint_counter = fsm.state_counter;
+                } else if (diff_change > FSM_MOVE_CRITIRIA)
+                {
+                    checkpoint_diff = diff_change <= LINEAR_CHECKPOINT_CHANGE_LIMIT ? diff :
+                                      checkpoint_diff - (MAX_CHECKPOINT_CHANGE -
+                                                         (MAX_CHECKPOINT_CHANGE - LINEAR_CHECKPOINT_CHANGE_LIMIT) *
+                                                         LINEAR_CHECKPOINT_CHANGE_LIMIT / diff_change) * fsm.motor_dir;
+                    checkpoint_counter = fsm.state_counter;
+                }
 #undef LINEAR_CHECKPOINT_CHANGE_LIMIT
 #undef MAX_CHECKPOINT_CHANGE
 #else
-            else if (fsm.state_counter == 0 || diff_change > FSM_MOVE_CRITIRIA)
-            {
-                checkpoint_diff = diff;
-                checkpoint_counter = fsm.state_counter;
-            }
+                    else if (fsm.state_counter == 0 || diff_change > FSM_MOVE_CRITIRIA)
+                    {
+                        checkpoint_diff = diff;
+                        checkpoint_counter = fsm.state_counter;
+                    }
 #endif
-            else if (fsm.state_counter > checkpoint_counter + FSM_TIMEOUT_MOVE_CHECKPOINT)
-            {   
-                // does not retry if close to target angle or ADC reading noise 
-                if (  (fsm.move_retry >= FSM_MOVE_RETRY_LIMIT) 
-                      || ((diff_abs < MIN_POSITION_DIFF_MOVE_RETRY) && !position_calc.limited))
-                    
+                else if (fsm.state_counter > checkpoint_counter + FSM_TIMEOUT_MOVE_CHECKPOINT)
                 {
-                    if (diff_abs <= RANGE_NEAR_TARGET)
+                    // does not retry if close to target angle or ADC reading noise
+                    if ((fsm.move_retry >= FSM_MOVE_RETRY_LIMIT)
+                        || ((diff_abs < MIN_POSITION_DIFF_MOVE_RETRY) && !position_calc.limited))
                     {
-                        motor_brake();
-                        next_state = FSM_STATE_DETACH;
-                        ending_target(FSM_RET_CODE_SUCCESS);
-                    }
-                    else
+                        if (diff_abs <= RANGE_NEAR_TARGET)
+                        {
+                            motor_brake();
+                            next_state = FSM_STATE_DETACH;
+                            ending_target(FSM_RET_CODE_SUCCESS);
+                        } else
+                        {
+                            motor_brake();
+                            next_state = FSM_STATE_DETACH;
+                            ending_target(FSM_RET_CODE_FAIL_MOVE);
+                        }
+                    } else
                     {
-                        motor_brake();
-                        next_state = FSM_STATE_DETACH;
-                        ending_target(FSM_RET_CODE_FAIL_MOVE);
+                        motor_stop();
+                        fsm.move_start_retry = 0;
+                        fsm.move_retry++;
+                        next_state = FSM_STATE_ENGAGE;
+                        NRF_LOG_WARNING("[%s] fsm.move_retry=%d", __func__, fsm.move_retry);
                     }
-                }
-                else
+                } else if (fsm.state_counter > checkpoint_counter + FSM_TIMEOUT_MOVE_CHECKPOINT / 3)
                 {
-                    motor_stop();
-                    fsm.move_start_retry = 0;
-                    fsm.move_retry++;
-                    next_state = FSM_STATE_ENGAGE;
-                    NRF_LOG_WARNING("[%s] fsm.move_retry=%d", __func__, fsm.move_retry);
+                    NRF_LOG_WARNING("[%s] FSM_STATE_MOVE checkpoint counter=%d, diff=%d (%d)", __func__,
+                                    fsm.state_counter - checkpoint_counter, diff, checkpoint_diff);
                 }
-            }
-            else if (fsm.state_counter > checkpoint_counter + FSM_TIMEOUT_MOVE_CHECKPOINT / 3)
+            } else
             {
-                NRF_LOG_WARNING("[%s] FSM_STATE_MOVE checkpoint counter=%d, diff=%d (%d)", __func__, fsm.state_counter - checkpoint_counter, diff, checkpoint_diff);
+                motor_brake();
+                next_state = FSM_STATE_DETACH;
             }
-        }
-        else
-        {
-            motor_brake();
-            next_state = FSM_STATE_DETACH;
-        }
-        break;
-    case FSM_STATE_DETACH:
+            break;
+        case FSM_STATE_DETACH:
 #define FSM_DETACH_CLU_DOCKING_DURATION0  (40 / FSM_INTERVAL_FAST_MS)
 #define FSM_DETACH_MOT_REV_DURATION       (80 / FSM_INTERVAL_FAST_MS)
 #define FSM_DETACH_CLU_DOCKING_DURATION1  (40 / FSM_INTERVAL_FAST_MS)
-        if (fsm.state_counter == 0)
-        {
-            //motor_stop();
-            clutch_stop();
-        }
-        else if (fsm.state_counter == FSM_DETACH_CLU_DOCKING_DURATION0)
-        {
-            motor_alternate();
-        }
-        else if (fsm.state_counter == (FSM_DETACH_CLU_DOCKING_DURATION0 + FSM_DETACH_MOT_REV_DURATION))
-        {
-            motor_brake();
-        }
-        else if (fsm.state_counter > (FSM_DETACH_CLU_DOCKING_DURATION0 + FSM_DETACH_MOT_REV_DURATION + FSM_DETACH_CLU_DOCKING_DURATION1))
-        {
-            motor_stop();
-            if (has_target())
+            if (fsm.state_counter == 0)
             {
-                next_state = FSM_STATE_ENGAGE;
-            }
-            else
+                //motor_stop();
+                clutch_stop();
+            } else if (fsm.state_counter == FSM_DETACH_CLU_DOCKING_DURATION0)
             {
-                next_state = FSM_STATE_IDLE;
+                motor_alternate();
+            } else if (fsm.state_counter == (FSM_DETACH_CLU_DOCKING_DURATION0 + FSM_DETACH_MOT_REV_DURATION))
+            {
+                motor_brake();
+            } else if (fsm.state_counter > (FSM_DETACH_CLU_DOCKING_DURATION0 + FSM_DETACH_MOT_REV_DURATION +
+                                            FSM_DETACH_CLU_DOCKING_DURATION1))
+            {
+                motor_stop();
+                if (has_target())
+                {
+                    next_state = FSM_STATE_ENGAGE;
+                } else
+                {
+                    next_state = FSM_STATE_IDLE;
+                }
             }
-        }
 
 #if 0
-        if (has_target())
-        {
-            clutch_stop();
-            next_state = FSM_STATE_ENGAGE;
-        }
-        else if (fsm.state_counter == 0)
-        {
-            motor_stop();
-            clutch_detach();
-        }
-        else if (!fsm.clutch_engaged)
-        {
-            clutch_stop();
-            next_state = FSM_STATE_IDLE;
-        }
-        else if (fsm.state_counter > FSM_TIMEOUT_DETACH * fsm.loosen_retry / FSM_DETACH_RETRY_LIMIT)
-        {
-            clutch_stop();
-            if (fsm.loosen_retry >= FSM_DETACH_RETRY_LIMIT)
+            if (has_target())
             {
+                clutch_stop();
+                next_state = FSM_STATE_ENGAGE;
+            }
+            else if (fsm.state_counter == 0)
+            {
+                motor_stop();
+                clutch_detach();
+            }
+            else if (!fsm.clutch_engaged)
+            {
+                clutch_stop();
                 next_state = FSM_STATE_IDLE;
-                if (!fsm.clutch_failed)
-                {
-                    fsm.clutch_failed = true;
-                }
-                ending_target(FSM_RET_CODE_FAIL_DETACH);
             }
-            else
+            else if (fsm.state_counter > FSM_TIMEOUT_DETACH * fsm.loosen_retry / FSM_DETACH_RETRY_LIMIT)
             {
-                next_state = FSM_STATE_LOOSEN;
+                clutch_stop();
+                if (fsm.loosen_retry >= FSM_DETACH_RETRY_LIMIT)
+                {
+                    next_state = FSM_STATE_IDLE;
+                    if (!fsm.clutch_failed)
+                    {
+                        fsm.clutch_failed = true;
+                    }
+                    ending_target(FSM_RET_CODE_FAIL_DETACH);
+                }
+                else
+                {
+                    next_state = FSM_STATE_LOOSEN;
+                }
             }
-        }
-        if (next_state == FSM_STATE_LOOSEN)
-        {
-            fsm.loosen_retry++;
-        }
-        else if (next_state != FSM_STATE_DETACH)
-        {
-            fsm.loosen_retry = 0;
-        }
+            if (next_state == FSM_STATE_LOOSEN)
+            {
+                fsm.loosen_retry++;
+            }
+            else if (next_state != FSM_STATE_DETACH)
+            {
+                fsm.loosen_retry = 0;
+            }
 #endif
-        break;
+            break;
 #if 0
-    case FSM_STATE_LOOSEN:
-        if (has_target())
-        {
-            motor_stop();
-            next_state = FSM_STATE_ENGAGE;
-            fsm.loosen_retry = 0;
-        }
-        else if (fsm.state_counter == LOOSEN_DELAY)
-        {
-            motor_alternate();
-        }
-        else if (fsm.state_counter > LOOSEN_DELAY)
-        {
-            motor_stop();
-            next_state = FSM_STATE_DETACH;
-        }
-        break;
+            case FSM_STATE_LOOSEN:
+                if (has_target())
+                {
+                    motor_stop();
+                    next_state = FSM_STATE_ENGAGE;
+                    fsm.loosen_retry = 0;
+                }
+                else if (fsm.state_counter == LOOSEN_DELAY)
+                {
+                    motor_alternate();
+                }
+                else if (fsm.state_counter > LOOSEN_DELAY)
+                {
+                    motor_stop();
+                    next_state = FSM_STATE_DETACH;
+                }
+                break;
 #endif
-    default:
-        NRF_LOG_WARNING("[%s] unexpected state=%d", __func__, fsm.state);
-        break;
+        default:
+            NRF_LOG_WARNING("[%s] unexpected state=%d", __func__, fsm.state);
+            break;
     }
 
     position_calc.filtered_position = position_filter(position_calc.last_position);
@@ -1377,8 +1349,7 @@ static void motor_fsm(int16_t position)
         if (fsm.ret_code == FSM_RET_CODE_NONE)
         {
             event.mech_status.target = fsm.target;
-        }
-        else
+        } else
         {
             event.mech_status.target = fsm.ending_target;
         }
@@ -1389,40 +1360,38 @@ static void motor_fsm(int16_t position)
 
             if (fsm.ret_code == FSM_RET_CODE_NONE)
             {
-                if (in_lock_range == last_history_session_in_lock_range && in_unlock_range == last_history_session_in_unlock_range)
+                if (in_lock_range == last_history_session_in_lock_range &&
+                    in_unlock_range == last_history_session_in_unlock_range)
                 {
-                    if ((in_lock_range != last_history_in_lock_range || in_unlock_range != last_history_in_unlock_range) &&
+                    if ((in_lock_range != last_history_in_lock_range ||
+                         in_unlock_range != last_history_in_unlock_range) &&
                         current_time - last_history_session_time >= RANGE_DETECT_SEC &&
                         !has_target())
                     {
                         if (in_lock_range)
                         {
                             event.history_type = US1_JP1_HISTORY_TYPE_MANUAL_LOCKED;
-                        }
-                        else if (in_unlock_range)
+                        } else if (in_unlock_range)
                         {
                             event.history_type = US1_JP1_HISTORY_TYPE_MANUAL_UNLOCKED;
-                        }
-                        else
+                        } else
                         {
                             event.history_type = US1_JP1_HISTORY_TYPE_MANUAL_ELSE;
                         }
                     }
-                }
-                else
+                } else
                 {
                     last_history_session_time = current_time;
                     last_history_session_in_lock_range = in_lock_range;
                     last_history_session_in_unlock_range = in_unlock_range;
                 }
-            }
-            else
+            } else
             {
                 if (fsm.ret_code == FSM_RET_CODE_SUCCESS)
                 {
-                    event.history_type = in_lock_range ? US1_JP1_HISTORY_TYPE_DRIVE_LOCKED : US1_JP1_HISTORY_TYPE_DRIVE_UNLOCKED;
-                }
-                else
+                    event.history_type = in_lock_range ? US1_JP1_HISTORY_TYPE_DRIVE_LOCKED
+                                                       : US1_JP1_HISTORY_TYPE_DRIVE_UNLOCKED;
+                } else
                 {
                     event.history_type = US1_JP1_HISTORY_TYPE_DRIVE_FAILED;
                 }
@@ -1439,8 +1408,7 @@ static void motor_fsm(int16_t position)
                 last_history_in_unlock_range = in_unlock_range;
                 last_history = event.history_type;
             }
-        }
-        else
+        } else
         {
             event.mech_status.ret_code = FSM_RET_CODE_NONE;
         }
@@ -1448,7 +1416,7 @@ static void motor_fsm(int16_t position)
         //if (battery.adc < last_sent_event.mech_status.battery - BATTERY_ADC_NOISE ||
         if (battery.current_adc < last_sent_event.mech_status.battery - BATTERY_ADC_NOISE ||
             event.mech_status.target != last_sent_event.mech_status.target ||
-            event.mech_status.ret_code !=  FSM_RET_CODE_NONE ||
+            event.mech_status.ret_code != FSM_RET_CODE_NONE ||
             fsm.clutch_failed != last_sent_event.mech_status.is_clutch_failed ||
             in_lock_range != last_sent_event.mech_status.in_lock_range ||
             in_unlock_range != last_sent_event.mech_status.in_unlock_range)
@@ -1462,7 +1430,8 @@ static void motor_fsm(int16_t position)
             (abs_diff > ESTIMATED_POSITION_ERROR && (current_time >= last_send_time + SEND_INTERVAL_SEC_TOLERATED)) ||
             (abs_diff && (current_time >= last_send_time + SEND_INTERVAL_SEC_ANY)))
         {
-            NRF_LOG_DEBUG("[%s] history_type=%d, is_critical=%d, abs_diff=%d, time_dirr=%d", __func__, event.history_type, event.mech_status.is_critical, abs_diff, current_time-last_send_time);
+            NRF_LOG_DEBUG("[%s] history_type=%d, is_critical=%d, abs_diff=%d, time_dirr=%d", __func__,
+                          event.history_type, event.mech_status.is_critical, abs_diff, current_time - last_send_time);
             last_send_time = current_time;
 
             //event.mech_status.battery = battery.adc;
@@ -1528,8 +1497,7 @@ static void on_single_rev_position(int16_t single_rev_position)
     if (position_calc.last_position == INT16_MIN)
     {
         position_calc.last_position = single_rev_position;
-    }
-    else if (abs_diff < 512 || diff == -512)
+    } else if (abs_diff < 512 || diff == -512)
     {
 #ifdef RESTRICT_POSITION_CHANGE
         position_calc.limited = abs_diff > max_change;
@@ -1538,21 +1506,18 @@ static void on_single_rev_position(int16_t single_rev_position)
             if (diff >= 0)
             {
                 position_calc.last_position += max_change;
-            }
-            else
+            } else
             {
                 position_calc.last_position -= max_change;
             }
-        }
-        else
+        } else
         {
             position_calc.last_position += diff;
         }
 #else
         position_calc.last_position += diff;
 #endif
-    }
-    else
+    } else
     {
         int16_t change = 1024 - abs_diff;
 
@@ -1563,8 +1528,7 @@ static void on_single_rev_position(int16_t single_rev_position)
         if (diff > 0)
         {
             position_calc.last_position -= change;
-        }
-        else
+        } else
         {
             position_calc.last_position += change;
         }
@@ -1613,7 +1577,7 @@ static void on_adc_battery(int16_t battery_adc)
 }
 #endif
 
-static void calib_timer_handler(void * p_context)
+static void calib_timer_handler(void *p_context)
 {
     if (rtc_ms == FSM_INTERVAL_SLOW_MS)
     {
@@ -1625,26 +1589,25 @@ static void calib_timer_handler(void * p_context)
         {
             calib.last_calibration_temperature = temperature;
             CRITICAL_REGION_ENTER();
-            need_calibrate = true;
-            //need_battery = true;
+                need_calibrate = true;
+                //need_battery = true;
             CRITICAL_REGION_EXIT();
-        }
-        else
+        } else
         {
             CRITICAL_REGION_ENTER();
-            //need_battery = true;
+                //need_battery = true;
             CRITICAL_REGION_EXIT();
         }
-        NRF_LOG_INFO("[%s] temperature=%d.%d (last:%d.%d)", __func__, temperature/4, (temperature&3)*25, calib.last_calibration_temperature/4, (calib.last_calibration_temperature&3)*25);
-    }
-    else
+        NRF_LOG_INFO("[%s] temperature=%d.%d (last:%d.%d)", __func__, temperature / 4, (temperature & 3) * 25,
+                     calib.last_calibration_temperature / 4, (calib.last_calibration_temperature & 3) * 25);
+    } else
     {
         NRF_LOG_DEBUG("[%s] rtc_ms=%d, skipped", __func__, rtc_ms);
     }
 }
 
 
-void us1_jp1_init(us1_jp1_init_t const * init)
+void us1_jp1_init(us1_jp1_init_t const *init)
 {
     ret_code_t err_code;
 
@@ -1752,14 +1715,14 @@ void us1_jp1_start(void)
 void us1_jp1_on_ble_connected(void)
 {
     CRITICAL_REGION_ENTER();
-    fsm.ble_connected = true;
+        fsm.ble_connected = true;
     CRITICAL_REGION_EXIT();
 }
 
 void us1_jp1_on_ble_disconnected(void)
 {
     CRITICAL_REGION_ENTER();
-    fsm.ble_connected = false;
+        fsm.ble_connected = false;
     CRITICAL_REGION_EXIT();
 }
 
@@ -1768,7 +1731,7 @@ int16_t us1_jp1_get_position(void)
     int16_t ret;
 
     CRITICAL_REGION_ENTER();
-    ret = position_calc.last_position;
+        ret = position_calc.last_position;
     CRITICAL_REGION_EXIT();
 
     return ret;
@@ -1787,15 +1750,16 @@ int16_t us1_jp1_get_battery(void)
 }
 #endif
 
-us1_jp1_conf_t* us1_jp1_get_mech_setting(void)
+us1_jp1_conf_t *us1_jp1_get_mech_setting(void)
 {
     return &conf;
 }
 
-ret_code_t us1_jp1_update_mech_setting(us1_jp1_conf_t const * new_conf)
+ret_code_t us1_jp1_update_mech_setting(us1_jp1_conf_t const *new_conf)
 {
     conf = *new_conf;
-    NRF_LOG_INFO("lock=%d (%d ~ %d), unlock=%d (%d ~ %d)", conf.lock, conf.lock_range.min, conf.lock_range.max, conf.unlock, conf.unlock_range.min, conf.unlock_range.max);
+    NRF_LOG_INFO("lock=%d (%d ~ %d), unlock=%d (%d ~ %d)", conf.lock, conf.lock_range.min, conf.lock_range.max,
+                 conf.unlock, conf.unlock_range.min, conf.unlock_range.max);
     if (!is_configured)
     {
         is_configured = true;
@@ -1813,14 +1777,14 @@ ret_code_t us1_jp1_goto_preset(uint8_t preset)
 
     switch (preset)
     {
-    case US1_JP1_PRESET_LOCK:
-        set_fsm_next_target(conf.lock, PURPOSE_LOCK, false);
-        break;
-    case US1_JP1_PRESET_UNLOCK:
-        set_fsm_next_target(conf.unlock, PURPOSE_UNLOCK, false);
-        break;
-    default:
-        return NRF_ERROR_INVALID_PARAM;
+        case US1_JP1_PRESET_LOCK:
+            set_fsm_next_target(conf.lock, PURPOSE_LOCK, false);
+            break;
+        case US1_JP1_PRESET_UNLOCK:
+            set_fsm_next_target(conf.unlock, PURPOSE_UNLOCK, false);
+            break;
+        default:
+            return NRF_ERROR_INVALID_PARAM;
     }
     if (autolock.started)
     {
@@ -1881,13 +1845,12 @@ void SAADC_IRQHandler(void)
         nrf_gpio_cfg_input(GPIO_PIN_POSITION_SW, NRF_GPIO_PIN_PULLUP);
 #endif
         nrf_saadc_event_clear(NRF_SAADC_EVENT_STARTED);     // w/o EDS3202 this is enough
-        if  ((is_short_pre = (nrf_gpio_pin_read(GPIO_PIN_POSITION_SW) == 0)) == false)
+        if ((is_short_pre = (nrf_gpio_pin_read(GPIO_PIN_POSITION_SW) == 0)) == false)
         {
             saadc_setup_measure_pos_batt();
 //            __ISB();
 //            nrf_delay_us(10);
-        }
-        else
+        } else
         {
             saadc_setup_measure_batt_only();
             nrf_gpio_cfg_default(GPIO_PIN_POSITION_SW);
@@ -1895,28 +1858,26 @@ void SAADC_IRQHandler(void)
         NRF_LOG_DEBUG("[%s] SAADC_STARTED: is_short_pre = %d", __func__, is_short_pre);
         nrf_saadc_task_trigger(NRF_SAADC_TASK_SAMPLE);
         nrf_saadc_event_clear(NRF_SAADC_EVENT_END);
-    }
-    else if (nrf_saadc_event_check(NRF_SAADC_EVENT_END))
+    } else if (nrf_saadc_event_check(NRF_SAADC_EVENT_END))
     {
 
         if (is_short_pre)
         {
             nrf_saadc_event_clear(NRF_SAADC_EVENT_END);
             nrf_gpio_cfg_default(GPIO_PIN_BATTERY_SW);
-        }
-        else
+        } else
         {
 
 #ifdef ENABLE_EDS3202
-        nrf_gpio_cfg_default(GPIO_PIN_EDS3202_S);
+            nrf_gpio_cfg_default(GPIO_PIN_EDS3202_S);
 #endif
 
-        /*
-         * strange, post short detect required delay is different from pre short detect on DUTs
-         */
+            /*
+             * strange, post short detect required delay is different from pre short detect on DUTs
+             */
 #ifdef ENABLE_EDS3202
-//        CONFIGURE_POSITION_SW_PIN_FOR_SHORT_DETECT_WITH_DYNAMIC_RESPONSE_TIME_COMPENSATION();
-        CONFIGURE_POSITION_SW_PIN_FOR_SHORT_DETECT_WITH_DYNAMIC_RESPONSE_TIME_COMPENSATION_1_UNIT();
+            //        CONFIGURE_POSITION_SW_PIN_FOR_SHORT_DETECT_WITH_DYNAMIC_RESPONSE_TIME_COMPENSATION();
+                    CONFIGURE_POSITION_SW_PIN_FOR_SHORT_DETECT_WITH_DYNAMIC_RESPONSE_TIME_COMPENSATION_1_UNIT();
 #else
             nrf_gpio_cfg_input(GPIO_PIN_POSITION_SW, NRF_GPIO_PIN_PULLUP);
 #endif
@@ -1926,7 +1887,8 @@ void SAADC_IRQHandler(void)
             nrf_gpio_cfg_default(GPIO_PIN_POSITION_SW);
         }
 
-        NRF_LOG_INFO("[%s] is short (pre,post)= (%d,%d), saadc_buffer[0]=%d, need_battery=%d, saadc_configuration=%d", __func__,  is_short_pre, is_short_post, saadc_buffer[0], need_battery, saadc_configuration);
+        NRF_LOG_INFO("[%s] is short (pre,post)= (%d,%d), saadc_buffer[0]=%d, need_battery=%d, saadc_configuration=%d",
+                     __func__, is_short_pre, is_short_post, saadc_buffer[0], need_battery, saadc_configuration);
 
 #ifdef DISABLE_ADC_SCAING
         on_single_rev_position(is_short_pre || is_short_post ? 0 : saadc_buffer[0]);
@@ -1944,11 +1906,10 @@ void SAADC_IRQHandler(void)
                 }
                 if (timecnt_ms_after_motor_act % BATTV_READING_INTERVAL_MS == 0)
                 {
-                    if (timecnt_ms_after_motor_act != 0) 
+                    if (timecnt_ms_after_motor_act != 0)
                     {
                         need_battery = true;
-                    }
-                    else if (!batt_1st_current_update_done)
+                    } else if (!batt_1st_current_update_done)
                     {
                         need_battery = true;
                     }
@@ -1959,8 +1920,7 @@ void SAADC_IRQHandler(void)
                     batt_gauge_update_req = true;
                 }
                 timecnt_ms_after_motor_act += FSM_INTERVAL_SLOW_MS;
-            }
-            else
+            } else
             {
                 need_battery = false;
             }
@@ -1971,55 +1931,63 @@ void SAADC_IRQHandler(void)
             //on_adc_battery(saadc_buffer[1]);
             int16_t battery_adc = saadc_buffer[1];
 
-            NRF_LOG_INFO("[%s] battery ADC got start---,battery_adc=%d,  pre_battery.current_adc=%d, pre_battery.gauge_adc=%d", __func__, battery_adc, battery.current_adc, battery.gauge_adc);
+            NRF_LOG_INFO(
+                    "[%s] battery ADC got start---,battery_adc=%d,  pre_battery.current_adc=%d, pre_battery.gauge_adc=%d",
+                    __func__, battery_adc, battery.current_adc, battery.gauge_adc);
             if (battery_adc < battery.current_adc - BATTERY_ADC_NOISE)
             {
                 battery.current_adc = battery_adc + BATTERY_ADC_NOISE;
-                NRF_LOG_INFO("[%s] normal current_volt got:need_battery=%d, battery_adc=%d, battery.current_adc%d", __func__, need_battery, battery_adc, battery.current_adc);
-            }
-            else if (battery_adc > battery.current_adc + BATTERY_ADC_NOISE)
+                NRF_LOG_INFO("[%s] normal current_volt got:need_battery=%d, battery_adc=%d, battery.current_adc%d",
+                             __func__, need_battery, battery_adc, battery.current_adc);
+            } else if (battery_adc > battery.current_adc + BATTERY_ADC_NOISE)
             {
                 battery.current_adc = battery_adc - BATTERY_ADC_NOISE;
-                NRF_LOG_INFO("[%s] normal current_volt got:need_battery=%d, battery_adc=%d, battery.current_adc%d", __func__, need_battery, battery_adc, battery.current_adc);
-            }
-            else
+                NRF_LOG_INFO("[%s] normal current_volt got:need_battery=%d, battery_adc=%d, battery.current_adc%d",
+                             __func__, need_battery, battery_adc, battery.current_adc);
+            } else
             {
                 battery.current_adc = (battery.current_adc + battery_adc) / 2;
                 need_battery = false;
                 batt_1st_current_update_done = true;
-                NRF_LOG_INFO("[%s] normal current_volt got:need_battery=%d, battery_adc=%d, battery.current_adc%d", __func__, need_battery, battery_adc, battery.current_adc);
+                NRF_LOG_INFO("[%s] normal current_volt got:need_battery=%d, battery_adc=%d, battery.current_adc%d",
+                             __func__, need_battery, battery_adc, battery.current_adc);
                 if (batt_gauge_update_req)
-                {  
+                {
                     batt_gauge_update_req = false;
-                    batt_1st_gauge_update_done= true;
+                    batt_1st_gauge_update_done = true;
                     batt_gauge_update_done = true;
                     battery.gauge_adc = battery.current_adc;
-                    NRF_LOG_INFO("[%s] normal gauge_volt got:need_battery=%d, battery.gauge_adc=%d", __func__, need_battery, battery.gauge_adc);
+                    NRF_LOG_INFO("[%s] normal gauge_volt got:need_battery=%d, battery.gauge_adc=%d", __func__,
+                                 need_battery, battery.gauge_adc);
                 }
             }
 
             if (!batt_1st_gauge_update_done)
             {
                 battery.gauge_adc = battery.current_adc;
-                NRF_LOG_INFO("[%s] 1st_gauge_volt not got:need_battery=%d, battery.gauge_adc=%d", __func__, need_battery, battery.gauge_adc);
+                NRF_LOG_INFO("[%s] 1st_gauge_volt not got:need_battery=%d, battery.gauge_adc=%d", __func__,
+                             need_battery, battery.gauge_adc);
             }
-            NRF_LOG_INFO("[%s] battery ADC got end---,need_battery=%d, battery_adc=%d, pre_battery.current_adc=%d, pre_battery.gauge_adc=%d", __func__, need_battery, battery_adc, battery.current_adc, battery.gauge_adc);
+            NRF_LOG_INFO(
+                    "[%s] battery ADC got end---,need_battery=%d, battery_adc=%d, pre_battery.current_adc=%d, pre_battery.gauge_adc=%d",
+                    __func__, need_battery, battery_adc, battery.current_adc, battery.gauge_adc);
         }
 
-        if (battery.current_adc <= BATTERY_LOW_ADC) 
+        if (battery.current_adc <= BATTERY_LOW_ADC)
         {
             if (!battery.is_low_battery)
             {
-               battery.is_low_battery = true;
-               NRF_LOG_INFO("[%s] low battery flag is true,battery.is_low_battery = %d", __func__, battery.is_low_battery);
+                battery.is_low_battery = true;
+                NRF_LOG_INFO("[%s] low battery flag is true,battery.is_low_battery = %d", __func__,
+                             battery.is_low_battery);
             }
-        }
-        else
+        } else
         {
             if (battery.is_low_battery)
             {
-               battery.is_low_battery = false;
-               NRF_LOG_INFO("[%s] low battery flag is false,battery.is_low_battery = %d", __func__, battery.is_low_battery);
+                battery.is_low_battery = false;
+                NRF_LOG_INFO("[%s] low battery flag is false,battery.is_low_battery = %d", __func__,
+                             battery.is_low_battery);
             }
         }
 
@@ -2041,8 +2009,7 @@ void SAADC_IRQHandler(void)
             NRF_LOG_INFO("[%s] SAADC triggered calibrate", __func__);
             nrf_saadc_task_trigger(NRF_SAADC_TASK_CALIBRATEOFFSET);
             need_calibrate = false;
-        }
-        else
+        } else
         {
             nrf_saadc_task_trigger(NRF_SAADC_TASK_STOP);
         }
@@ -2055,10 +2022,11 @@ void RTC_IRQHandler(void)
 }
 
 #ifndef DIRECT_EVENT_HANDLER
+
 void EVENT_IRQ_HANDLER(void)
 {
     static uint32_t idx = 0;
-    uint32_t next_idx = nrf_atomic_u32_and(&event_buffer_idx, (EVENT_BUFFER_CNT-1));
+    uint32_t next_idx = nrf_atomic_u32_and(&event_buffer_idx, (EVENT_BUFFER_CNT - 1));
 
     NRF_LOG_DEBUG("[%s] idx=%d, next_idx=%d", __func__, idx, next_idx);
 
@@ -2068,38 +2036,39 @@ void EVENT_IRQ_HANDLER(void)
         {
             switch (event_buffer[idx].history_type)
             {
-            case US1_JP1_HISTORY_TYPE_NONE:
-                if (autolock.triggered)
-                {
-                    event_buffer[idx].history_type = US1_JP1_HISTORY_TYPE_AUTOLOCK;
-                    autolock.triggered = false;
-                }
-                break;
-            case US1_JP1_HISTORY_TYPE_MANUAL_LOCKED:
-                autolock_timer_stop();
-                break;
-            case US1_JP1_HISTORY_TYPE_MANUAL_UNLOCKED:
-            case US1_JP1_HISTORY_TYPE_MANUAL_ELSE:
-            case US1_JP1_HISTORY_TYPE_DRIVE_UNLOCKED:
-                autolock_timer_start(autolock.second);
-                break;
-            case US1_JP1_HISTORY_TYPE_DRIVE_FAILED:
-                if (!event_buffer[idx].mech_status.in_lock_range)
-                {
+                case US1_JP1_HISTORY_TYPE_NONE:
+                    if (autolock.triggered)
+                    {
+                        event_buffer[idx].history_type = US1_JP1_HISTORY_TYPE_AUTOLOCK;
+                        autolock.triggered = false;
+                    }
+                    break;
+                case US1_JP1_HISTORY_TYPE_MANUAL_LOCKED:
+                    autolock_timer_stop();
+                    break;
+                case US1_JP1_HISTORY_TYPE_MANUAL_UNLOCKED:
+                case US1_JP1_HISTORY_TYPE_MANUAL_ELSE:
+                case US1_JP1_HISTORY_TYPE_DRIVE_UNLOCKED:
                     autolock_timer_start(autolock.second);
-                }
-                break;
-            default:
-               break;
+                    break;
+                case US1_JP1_HISTORY_TYPE_DRIVE_FAILED:
+                    if (!event_buffer[idx].mech_status.in_lock_range)
+                    {
+                        autolock_timer_start(autolock.second);
+                    }
+                    break;
+                default:
+                    break;
             }
         }
         us1_jp1_event_handler(&event_buffer[idx]);
         idx = (idx + 1) & (EVENT_BUFFER_CNT - 1);
     }
 }
+
 #endif
 
-__WEAK void us1_jp1_event_handler(us1_jp1_event_t const * event)
+__WEAK void us1_jp1_event_handler(us1_jp1_event_t const *event)
 {
     UNUSED_PARAMETER(event);
     NRF_LOG_WARNING("[%s] weak");

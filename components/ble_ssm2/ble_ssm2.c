@@ -709,7 +709,6 @@ static void handle_plaintext_command(session_t* session, session_status_e sessio
 
 static void handle_write(session_t* session, ble_gatts_evt_write_t const * write)
 {
-    ret_code_t err_code;
     ssm2_command_t cmd;
     uint8_t decrypt_buffer[128];
     session_status_e session_status = session_get_status(session);
@@ -1477,6 +1476,7 @@ ret_code_t ble_ssm2_advertising_update(void)
         NRF_LOG_INFO("[%s] scan_rsp: len=%d", __func__, ssm2.adv.ble_gap_adv_data.scan_rsp_data.len);
         NRF_LOG_HEXDUMP_INFO(ssm2.adv.ble_gap_adv_data.scan_rsp_data.p_data, ssm2.adv.ble_gap_adv_data.scan_rsp_data.len);
     }
+    err_code = NRF_SUCCESS;
     return err_code;
 }
 
@@ -1501,8 +1501,10 @@ ret_code_t ble_ssm2_send_login_msg(session_t* session, ssm2_op_code_e op)
     STATIC_ASSERT(offsetof(login_msg_data_t, mech_setting_and_status) == 8);
 
     uint8_t buf[4 + offsetof(login_msg_data_t, mech_setting_and_status) + MAX_MECH_SETTING_LEN + MAX_MECH_STATUS_LEN] __ALIGN(4);
-    login_msg_data_t* data = (typeof(data)) (buf + 4);
-    uint16_t data_len = offsetof(typeof(*data), mech_setting_and_status) + ssm2.mech_setting_len + ssm2.mech_status_len;
+//    login_msg_data_t* data = (typeof(data)) (buf + 4);
+    login_msg_data_t* data = {0};
+//    uint16_t data_len = offsetof(typeof(*data), mech_setting_and_status) + ssm2.mech_setting_len + ssm2.mech_status_len;
+    uint16_t data_len = offsetof(login_msg_data_t, mech_setting_and_status) + ssm2.mech_setting_len + ssm2.mech_status_len;
 
     APP_ERROR_CHECK_BOOL((op == SSM2_OP_CODE_RESPONSE || op == SSM2_OP_CODE_PUBLISH));
     APP_ERROR_CHECK_BOOL((ssm2.mech_setting_len <= MAX_MECH_SETTING_LEN && ssm2.mech_status_len <= MAX_MECH_STATUS_LEN));
@@ -1621,9 +1623,7 @@ void ble_ssm2_set_clear_all_flag(void)
 
 bool ble_ssm2_get_clear_all_flag(void)
 {
-    ret_code_t err_code = NRF_SUCCESS;
     uint32_t gpregret;
-    bool ret;
 
     sd_power_gpregret_get(GPREGRET2, &gpregret);
     sd_power_gpregret_clr(GPREGRET2, GPREGRET2_BIT_NEED_CLEAR_ALL);
@@ -1687,7 +1687,6 @@ void ble_ssm2_set_adv_position(int16_t position)
 ret_code_t ble_ssm2_set_conf_adv(ssm2_conf_adv_t * conf)
 {
     ret_code_t err_code;
-    ble_adv_modes_config_t config;
 
     if (!conf)
     {

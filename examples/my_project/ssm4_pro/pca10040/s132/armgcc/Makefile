@@ -24,7 +24,6 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/util/app_error_handler_gcc.c \
   $(SDK_ROOT)/components/libraries/util/app_error_weak.c \
   $(SDK_ROOT)/components/libraries/scheduler/app_scheduler.c \
-  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
   $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
   $(SDK_ROOT)/components/libraries/crc16/crc16.c \
   $(SDK_ROOT)/components/libraries/fds/fds.c \
@@ -76,9 +75,6 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/peer_manager/pm_buffer.c \
   $(SDK_ROOT)/components/ble/peer_manager/security_dispatcher.c \
   $(SDK_ROOT)/components/ble/peer_manager/security_manager.c \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_ble.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_soc.c \
@@ -94,6 +90,20 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/crypto/backend/optiga/optiga_backend_ecc.c \
   $(SDK_ROOT)/components/libraries/crypto/backend/nrf_sw/nrf_sw_backend_hash.c \
   $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_rng.c \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/ble_dfu/ble_dfu.c \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/ble_dfu/ble_dfu_bonded.c \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/ble_dfu/ble_dfu_unbonded.c \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental/app_timer2_mod.c \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental/drv_rtc.c \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer.c \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer_freertos.c \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer_rtx.c \
+
+#  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
+#  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
+#  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
+#  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
+
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -116,7 +126,6 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/ringbuf \
   $(SDK_ROOT)/modules/nrfx/hal \
   $(SDK_ROOT)/components/libraries/bsp \
-  $(SDK_ROOT)/components/libraries/timer \
   $(SDK_ROOT)/external/segger_rtt \
   $(SDK_ROOT)/components/libraries/log \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt \
@@ -129,7 +138,6 @@ INC_FOLDERS += \
   $(SDK_ROOT)/integration/nrfx/legacy \
   $(SDK_ROOT)/components/libraries/mutex \
   $(SDK_ROOT)/components/libraries/delay \
-  $(SDK_ROOT)/components/libraries/bootloader/ble_dfu \
   $(SDK_ROOT)/components/libraries/atomic_fifo \
   $(SDK_ROOT)/components/libraries/atomic \
   $(SDK_ROOT)/components/boards \
@@ -139,7 +147,6 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/ble/ble_advertising \
   $(SDK_ROOT)/components/libraries/atomic_flags \
   $(SDK_ROOT)/modules/nrfx/drivers/include \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu \
   $(SDK_ROOT)/external/fprintf \
   $(SDK_ROOT)/components/libraries/svc \
   $(SDK_ROOT)/components/libraries/log/src \
@@ -156,6 +163,14 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/crypto/backend/optiga \
   $(SDK_ROOT)/components/libraries/crypto/backend/nrf_sw \
   $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/ble_dfu \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/timer \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental \
+  $(SDK_ROOT)/components/libraries/bootloader/ble_dfu \
+
+
+#  $(SDK_ROOT)/components/libraries/timer \
+#  $(SDK_ROOT)/components/ble/ble_services/ble_dfu \
 
 
 # Libraries common to all targets
@@ -268,6 +283,7 @@ flash_softdevice:
 
 erase:
 	nrfjprog -f nrf52 --eraseall
+
 
 SDK_CONFIG_FILE := ../config/sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
