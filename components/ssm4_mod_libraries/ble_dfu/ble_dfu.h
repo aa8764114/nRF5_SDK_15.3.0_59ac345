@@ -122,7 +122,6 @@ typedef enum
     DFU_OP_RESPONSE_CODE    = 0x20  /**< Response code. */
 } ble_dfu_buttonless_op_code_t;
 
-
 /**@brief Type holding memory used by Secure DFU Buttonless Service.
   */
 typedef struct
@@ -244,7 +243,6 @@ uint32_t ble_dfu_buttonless_bootloader_start_prepare(void);
  */
 uint32_t ble_dfu_buttonless_bootloader_start_finalize(void);
 
-#define SDK_MOD_DFU_TOGGLE_ENABLED
 #ifdef SDK_MOD_DFU_TOGGLE_ENABLED
 void ble_dfu_set_enabled(bool is_enabled);
 bool ble_dfu_is_enabled(void);

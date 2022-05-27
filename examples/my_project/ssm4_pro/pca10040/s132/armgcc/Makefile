@@ -98,6 +98,8 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer.c \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer_freertos.c \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer_rtx.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_pwm.c \
+  $(SDK_ROOT)/components/libraries/sortlist/nrf_sortlist.c \
 
 #  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
@@ -167,6 +169,7 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental \
   $(SDK_ROOT)/components/libraries/bootloader/ble_dfu \
+  $(SDK_ROOT)/components/libraries/sortlist \
 
 
 #  $(SDK_ROOT)/components/libraries/timer \
@@ -204,6 +207,7 @@ CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin -fshort-enums
+CFLAGS += -DSDK_MOD_DFU_TOGGLE_ENABLED
 
 # C++ flags common to all targets
 CXXFLAGS += $(OPT)

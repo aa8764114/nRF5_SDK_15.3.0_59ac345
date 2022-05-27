@@ -351,7 +351,7 @@ ret_code_t fdsx_init(void)
  */
 ret_code_t fdsx_write_ex(uint16_t file_id, uint16_t rec_key, void const * const data, uint16_t len, uint32_t* record_id_out)
 {
-    ret_code_t result;
+    ret_code_t result = NRF_SUCCESS;
 
     if (len > sizeof(fdsx.job[0].data))
     {
@@ -452,6 +452,7 @@ ret_code_t fdsx_write_ex(uint16_t file_id, uint16_t rec_key, void const * const 
 
     CRITICAL_REGION_EXIT();
 
+    result = NRF_SUCCESS;
     return result;
 }
 
@@ -614,7 +615,7 @@ ret_code_t fdsx_delete_by_record_id(uint32_t record_id)
     }
     else
     {
-        fds_record_desc_t desc;
+//        fds_record_desc_t desc;
         fds_flash_record_t record;
 
         result = fds_descriptor_from_rec_id(&desc, record_id);

@@ -611,7 +611,7 @@ static void saadc_setup_for_next(void)
 
 static void init_saadc(void)
 {
-    const nrf_saadc_channel_config_t conf = {
+    const nrf_saadc_channel_config_t saadc_conf = {
             .resistor_p = NRF_SAADC_RESISTOR_DISABLED, \
             .resistor_n = NRF_SAADC_RESISTOR_DISABLED, \
             .gain       = NRF_SAADC_GAIN1_4, \
@@ -637,8 +637,8 @@ static void init_saadc(void)
 
     nrf_saadc_enable();
 
-    nrf_saadc_channel_init(SAADC_CHANNEL_POSITION, &conf);
-    adc_conf_battery = conf;
+    nrf_saadc_channel_init(SAADC_CHANNEL_POSITION, &saadc_conf);
+    adc_conf_battery = saadc_conf;
     adc_conf_battery.gain = NRF_SAADC_GAIN1_6;
     adc_conf_battery.reference = NRF_SAADC_REFERENCE_INTERNAL;
     adc_conf_battery.acq_time = NRF_SAADC_ACQTIME_20US;
@@ -723,11 +723,15 @@ void mdrv_clutch_pwm(uint32_t pwm_frq, uint16_t pwm_dutyratio)
                     .step_mode    = NRF_PWM_STEP_AUTO
             };
 
-    static nrf_pwm_values_individual_t seq_values[] = {0, 0, 0, 0};
+    static nrf_pwm_values_individual_t seq_values[4] = {{0},
+                                                        {0},
+                                                        {0},
+                                                        {0}};
     static nrf_pwm_sequence_t const seq =
             {
                     .values.p_individual = seq_values,
-                    .length     = NRF_PWM_VALUES_LENGTH(seq_values),
+//                    .length     = NRF_PWM_VALUES_LENGTH(seq_values),
+                    .length     = 16,
                     .repeats    = 0,
                     .end_delay  = 0
             };
@@ -960,9 +964,9 @@ static int16_t guess_position(void)
 
 static void motor_fsm(int16_t position)
 {
-    static bool temp_in_lock_range;
-    static bool temp_in_unlock_range;
-    static uint32_t temp_range_time;
+//    static bool temp_in_lock_range;
+//    static bool temp_in_unlock_range;
+//    static uint32_t temp_range_time;
     int32_t diff, diff_abs;
     fsm_state_e next_state = fsm.state;
     bool switched_target;
@@ -990,9 +994,9 @@ static void motor_fsm(int16_t position)
             fsm.target = INT16_MIN;
             fsm.purpose = PURPOSE_OTHERS;
             range_detect_init(position);
-            temp_in_lock_range = false;
-            temp_in_unlock_range = false;
-            temp_range_time = 0;
+//            temp_in_lock_range = false;
+//            temp_in_unlock_range = false;
+//            temp_range_time = 0;
             break;
         case FSM_STATE_IDLE:
             switched_target = switch_to_next_target();
@@ -1335,7 +1339,7 @@ static void motor_fsm(int16_t position)
         static bool last_history_session_in_unlock_range = 0;
         static bool last_history_in_lock_range = 0;
         static bool last_history_in_unlock_range = 0;
-        static us1_jp1_history_type_e last_history = US1_JP1_HISTORY_TYPE_NONE;
+//        static us1_jp1_history_type_e last_history = US1_JP1_HISTORY_TYPE_NONE;
         uint32_t current_time = app_timer_get_epoch_sec();
         bool in_lock_range = in_range(position_calc.filtered_position, &conf.lock_range);
         bool in_unlock_range = in_range(position_calc.filtered_position, &conf.unlock_range);
@@ -1406,7 +1410,7 @@ static void motor_fsm(int16_t position)
                 last_history_session_in_unlock_range = in_unlock_range;
                 last_history_in_lock_range = in_lock_range;
                 last_history_in_unlock_range = in_unlock_range;
-                last_history = event.history_type;
+//                last_history = event.history_type;
             }
         } else
         {
