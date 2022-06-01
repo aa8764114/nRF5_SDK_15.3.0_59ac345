@@ -78,7 +78,6 @@ SRC_FILES += \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_ble.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_soc.c \
-  $(SDK_ROOT)/components/ble_ssm2/ble_ssm2.c \
   $(SDK_ROOT)/components/ssm4_hardware/us1_jp1.c \
   $(SDK_ROOT)/components/ssm4_libraries/fdsx.c \
   $(SDK_ROOT)/components/ssm4_version/version.c \
@@ -93,18 +92,29 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ssm4_mod_libraries/ble_dfu/ble_dfu.c \
   $(SDK_ROOT)/components/ssm4_mod_libraries/ble_dfu/ble_dfu_bonded.c \
   $(SDK_ROOT)/components/ssm4_mod_libraries/ble_dfu/ble_dfu_unbonded.c \
-  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental/app_timer2_mod.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_pwm.c \
+  $(SDK_ROOT)/components/libraries/sortlist/nrf_sortlist.c \
+  $(SDK_ROOT)/components/ble_ssm2/application_layer.c \
+  $(SDK_ROOT)/components/ble_ssm2/ble_ssm2.c \
+  $(SDK_ROOT)/components/ble_ssm2/command_handler.c \
+  $(SDK_ROOT)/components/ble_ssm2/history.c \
+  $(SDK_ROOT)/components/ble_ssm2/permission.c \
+  $(SDK_ROOT)/components/ble_ssm2/security_layer.c \
+  $(SDK_ROOT)/components/ble_ssm2/segment_layer.c \
+  $(SDK_ROOT)/components/ble_ssm2/session.c \
+  $(SDK_ROOT)/components/ble_ssm2/user.c \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental/app_timer2.c \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental/drv_rtc.c \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer.c \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer_freertos.c \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer_rtx.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_pwm.c \
-  $(SDK_ROOT)/components/libraries/sortlist/nrf_sortlist.c \
 
-#  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
+#  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
+#  $(SDK_ROOT)/components/libraries/timer/experimental/app_timer2.c \
+#  $(SDK_ROOT)/components/libraries/timer/experimental/drv_rtc.c \
 
 
 # Include folders common to all targets
@@ -166,13 +176,14 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/crypto/backend/nrf_sw \
   $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw \
   $(SDK_ROOT)/components/ssm4_mod_libraries/ble_dfu \
-  $(SDK_ROOT)/components/ssm4_mod_libraries/timer \
-  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental \
   $(SDK_ROOT)/components/libraries/bootloader/ble_dfu \
   $(SDK_ROOT)/components/libraries/sortlist \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/timer \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental \
 
 
 #  $(SDK_ROOT)/components/libraries/timer \
+#  $(SDK_ROOT)/components/libraries/timer/experimental \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu \
 
 
@@ -207,7 +218,8 @@ CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin -fshort-enums
-CFLAGS += -DSDK_MOD_DFU_TOGGLE_ENABLED
+CFLAGS += -DAPP_TIMER_V2_RTC1_ENABLED
+
 
 # C++ flags common to all targets
 CXXFLAGS += $(OPT)

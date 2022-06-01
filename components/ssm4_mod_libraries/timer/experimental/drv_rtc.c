@@ -44,7 +44,6 @@
 
 /* Module is integral part of app_timer implementation. */
 #define NRF_LOG_MODULE_NAME app_timer
-#define NRF_LOG_LEVEL  0
 #include <nrf_log.h>
 
 #define EVT_TO_STR(event)                                           \

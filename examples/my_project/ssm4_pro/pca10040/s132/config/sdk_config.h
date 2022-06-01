@@ -46,6 +46,107 @@
 #ifdef USE_APP_CONFIG
 #include "app_config.h"
 #endif
+
+#define SDK_MOD_DFU_TOGGLE_ENABLED
+#define SDK_MOD_APP_TIMER_FOR_EPOCH
+#define SDK_MOD_FDS_PAGE_AVAILABLE_SPACE
+#define SDK_MOD_FDS_ADDRESS_IS_VALID
+
+#define SDK_DEFAULT_PERIPHERAL_IRQ_PRIORITY (6)
+
+#define FDS_OP_QUEUE_SIZE 32
+
+#define NRF_SORTLIST_ENABLED 1
+
+#define APP_TIMER_KEEPS_RTC_ACTIVE 1
+
+#define NRF_CRYPTO_ENABLED 1
+#define NRF_CRYPTO_ALLOCATOR 0
+
+#define NRF_CRYPTO_BACKEND_MICRO_ECC_ENABLED 1
+#define NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP256R1_ENABLED 1
+//#define NRF_CRYPTO_BACKEND_MICRO_ECC_LITTLE_ENDIAN_ENABLED 1
+
+#define NRF_CRYPTO_BACKEND_NRF_HW_RNG_ENABLED 0
+#define NRF_CRYPTO_RNG_STATIC_MEMORY_BUFFERS_ENABLED 0
+#define NRF_CRYPTO_RNG_AUTO_INIT_ENABLED 0
+
+#define NRFX_PPI_ENABLED 1
+
+#define NRF_QUEUE_ENABLED 1
+#define RNG_ENABLED 1
+#define RNG_CONFIG_POOL_SIZE 64
+#define RNG_CONFIG_ERROR_CORRECTION 1
+#define NRFX_RNG_ENABLED 1
+#define NRFX_RNG_CONFIG_ERROR_CORRECTION 1
+#define NRFX_RNG_CONFIG_IRQ_PRIORITY SDK_DEFAULT_PERIPHERAL_IRQ_PRIORITY
+
+#define BSP_LONG_PUSH_TIMEOUT_MS            (3000)
+#define ADVERTISING_LED_ON_INTERVAL         (5)                                 // APP_TIMER_MIN_TIMEOUT_TICKS
+#define ADVERTISING_LED_OFF_INTERVAL        (3000-ADVERTISING_LED_ON_INTERVAL)
+#define ADVERTISING_SLOW_LED_ON_INTERVAL    (5)                                 // APP_TIMER_MIN_TIMEOUT_TICKS
+#define ADVERTISING_SLOW_LED_OFF_INTERVAL   (5000-ADVERTISING_LED_ON_INTERVAL)
+
+// <e> MEM_MANAGER_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef MEM_MANAGER_CONFIG_LOG_ENABLED
+#define MEM_MANAGER_CONFIG_LOG_ENABLED 1
+#endif
+// <o> MEM_MANAGER_CONFIG_LOG_LEVEL  - Default Severity level
+
+// <0=> Off
+// <1=> Error
+// <2=> Warning
+// <3=> Info
+// <4=> Debug
+
+#ifndef MEM_MANAGER_CONFIG_LOG_LEVEL
+#define MEM_MANAGER_CONFIG_LOG_LEVEL 2
+#endif
+
+// <o> MEM_MANAGER_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+
+// <0=> Default
+// <1=> Black
+// <2=> Red
+// <3=> Green
+// <4=> Yellow
+// <5=> Blue
+// <6=> Magenta
+// <7=> Cyan
+// <8=> White
+
+#ifndef MEM_MANAGER_CONFIG_INFO_COLOR
+#define MEM_MANAGER_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> MEM_MANAGER_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+
+// <0=> Default
+// <1=> Black
+// <2=> Red
+// <3=> Green
+// <4=> Yellow
+// <5=> Blue
+// <6=> Magenta
+// <7=> Cyan
+// <8=> White
+
+#ifndef MEM_MANAGER_CONFIG_DEBUG_COLOR
+#define MEM_MANAGER_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <q> MEM_MANAGER_DISABLE_API_PARAM_CHECK  - Disable API parameter checks in the module.
+
+
+#ifndef MEM_MANAGER_DISABLE_API_PARAM_CHECK
+#define MEM_MANAGER_DISABLE_API_PARAM_CHECK 0
+#endif
+// </h>
+
+
 // <h> Board Support 
 
 //==========================================================
@@ -53,7 +154,7 @@
  
 
 #ifndef BSP_BTN_BLE_ENABLED
-#define BSP_BTN_BLE_ENABLED 1
+#define BSP_BTN_BLE_ENABLED 0
 #endif
 
 // </h> 
@@ -112,7 +213,7 @@
 // <e> PEER_MANAGER_ENABLED - peer_manager - Peer Manager
 //==========================================================
 #ifndef PEER_MANAGER_ENABLED
-#define PEER_MANAGER_ENABLED 1
+#define PEER_MANAGER_ENABLED 0
 #endif
 // <o> PM_MAX_REGISTRANTS - Number of event handlers that can be registered. 
 #ifndef PM_MAX_REGISTRANTS
@@ -522,7 +623,7 @@
 // <e> NRFX_UARTE_ENABLED - nrfx_uarte - UARTE peripheral driver
 //==========================================================
 #ifndef NRFX_UARTE_ENABLED
-#define NRFX_UARTE_ENABLED 1
+#define NRFX_UARTE_ENABLED 0
 #endif
 // <o> NRFX_UARTE0_ENABLED - Enable UARTE0 instance 
 #ifndef NRFX_UARTE0_ENABLED
@@ -643,7 +744,7 @@
 // <e> NRFX_UART_ENABLED - nrfx_uart - UART peripheral driver
 //==========================================================
 #ifndef NRFX_UART_ENABLED
-#define NRFX_UART_ENABLED 1
+#define NRFX_UART_ENABLED 0
 #endif
 // <o> NRFX_UART0_ENABLED - Enable UART0 instance 
 #ifndef NRFX_UART0_ENABLED
@@ -804,10 +905,160 @@
 
 // </e>
 
+// <e> PWM_ENABLED - nrf_drv_pwm - PWM peripheral driver - legacy layer
+//==========================================================
+#ifndef PWM_ENABLED
+#define PWM_ENABLED 1
+#endif
+// <o> PWM_DEFAULT_CONFIG_OUT0_PIN - Out0 pin  <0-31> 
+
+
+#ifndef PWM_DEFAULT_CONFIG_OUT0_PIN
+#define PWM_DEFAULT_CONFIG_OUT0_PIN 31
+#endif
+
+// <o> PWM_DEFAULT_CONFIG_OUT1_PIN - Out1 pin  <0-31> 
+
+
+#ifndef PWM_DEFAULT_CONFIG_OUT1_PIN
+#define PWM_DEFAULT_CONFIG_OUT1_PIN 31
+#endif
+
+// <o> PWM_DEFAULT_CONFIG_OUT2_PIN - Out2 pin  <0-31> 
+
+
+#ifndef PWM_DEFAULT_CONFIG_OUT2_PIN
+#define PWM_DEFAULT_CONFIG_OUT2_PIN 31
+#endif
+
+// <o> PWM_DEFAULT_CONFIG_OUT3_PIN - Out3 pin  <0-31> 
+
+
+#ifndef PWM_DEFAULT_CONFIG_OUT3_PIN
+#define PWM_DEFAULT_CONFIG_OUT3_PIN 31
+#endif
+
+// <o> PWM_DEFAULT_CONFIG_BASE_CLOCK  - Base clock
+ 
+// <0=> 16 MHz 
+// <1=> 8 MHz 
+// <2=> 4 MHz 
+// <3=> 2 MHz 
+// <4=> 1 MHz 
+// <5=> 500 kHz 
+// <6=> 250 kHz 
+// <7=> 125 kHz 
+
+#ifndef PWM_DEFAULT_CONFIG_BASE_CLOCK
+#define PWM_DEFAULT_CONFIG_BASE_CLOCK 4
+#endif
+
+// <o> PWM_DEFAULT_CONFIG_COUNT_MODE  - Count mode
+ 
+// <0=> Up 
+// <1=> Up and Down 
+
+#ifndef PWM_DEFAULT_CONFIG_COUNT_MODE
+#define PWM_DEFAULT_CONFIG_COUNT_MODE 0
+#endif
+
+// <o> PWM_DEFAULT_CONFIG_TOP_VALUE - Top value 
+#ifndef PWM_DEFAULT_CONFIG_TOP_VALUE
+#define PWM_DEFAULT_CONFIG_TOP_VALUE 1000
+#endif
+
+// <o> PWM_DEFAULT_CONFIG_LOAD_MODE  - Load mode
+ 
+// <0=> Common 
+// <1=> Grouped 
+// <2=> Individual 
+// <3=> Waveform 
+
+#ifndef PWM_DEFAULT_CONFIG_LOAD_MODE
+#define PWM_DEFAULT_CONFIG_LOAD_MODE 2
+#endif
+
+// <o> PWM_DEFAULT_CONFIG_STEP_MODE  - Step mode
+ 
+// <0=> Auto 
+// <1=> Triggered 
+
+#ifndef PWM_DEFAULT_CONFIG_STEP_MODE
+#define PWM_DEFAULT_CONFIG_STEP_MODE 0
+#endif
+
+// <o> PWM_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+
+// <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+// <4=> 4 
+// <5=> 5 
+// <6=> 6 
+// <7=> 7 
+
+#ifndef PWM_DEFAULT_CONFIG_IRQ_PRIORITY
+#define PWM_DEFAULT_CONFIG_IRQ_PRIORITY 7
+#endif
+
+// <q> PWM0_ENABLED  - Enable PWM0 instance
+ 
+
+#ifndef PWM0_ENABLED
+#define PWM0_ENABLED 1
+#endif
+
+// <q> PWM1_ENABLED  - Enable PWM1 instance
+ 
+
+#ifndef PWM1_ENABLED
+#define PWM1_ENABLED 0
+#endif
+
+// <q> PWM2_ENABLED  - Enable PWM2 instance
+ 
+
+#ifndef PWM2_ENABLED
+#define PWM2_ENABLED 0
+#endif
+
+// <e> PWM_NRF52_ANOMALY_109_WORKAROUND_ENABLED - Enables nRF52 Anomaly 109 workaround for PWM.
+
+// <i> The workaround uses interrupts to wake up the CPU and ensure
+// <i> it is active when PWM is about to start a DMA transfer. For
+// <i> initial transfer, done when a playback is started via PPI,
+// <i> a specific EGU instance is used to generate the interrupt.
+// <i> During the playback, the PWM interrupt triggered on SEQEND
+// <i> event of a preceding sequence is used to protect the transfer
+// <i> done for the next sequence to be played.
+//==========================================================
+#ifndef PWM_NRF52_ANOMALY_109_WORKAROUND_ENABLED
+#define PWM_NRF52_ANOMALY_109_WORKAROUND_ENABLED 0
+#endif
+// <o> PWM_NRF52_ANOMALY_109_EGU_INSTANCE  - EGU instance used by the nRF52 Anomaly 109 workaround for PWM.
+ 
+// <0=> EGU0 
+// <1=> EGU1 
+// <2=> EGU2 
+// <3=> EGU3 
+// <4=> EGU4 
+// <5=> EGU5 
+
+#ifndef PWM_NRF52_ANOMALY_109_EGU_INSTANCE
+#define PWM_NRF52_ANOMALY_109_EGU_INSTANCE 5
+#endif
+
+// </e>
+
+// </e>
+
 // <e> UART_ENABLED - nrf_drv_uart - UART/UARTE peripheral driver - legacy layer
 //==========================================================
 #ifndef UART_ENABLED
-#define UART_ENABLED 1
+#define UART_ENABLED 0
 #endif
 // <o> UART_DEFAULT_CONFIG_HWFC  - Hardware Flow Control
  
@@ -884,7 +1135,7 @@
 // <e> UART0_ENABLED - Enable UART0 instance
 //==========================================================
 #ifndef UART0_ENABLED
-#define UART0_ENABLED 1
+#define UART0_ENABLED 0
 #endif
 // <q> UART0_CONFIG_USE_EASY_DMA  - Default setting for using EasyDMA
  
@@ -1041,7 +1292,7 @@
 // <i> The total amount of flash memory that is used by FDS amounts to @ref FDS_VIRTUAL_PAGES * @ref FDS_VIRTUAL_PAGE_SIZE * 4 bytes.
 
 #ifndef FDS_VIRTUAL_PAGES
-#define FDS_VIRTUAL_PAGES 3
+#define FDS_VIRTUAL_PAGES 6
 #endif
 
 // <o> FDS_VIRTUAL_PAGE_SIZE  - The size of a virtual flash page.
@@ -1433,7 +1684,7 @@
 // <e> NRF_LOG_BACKEND_RTT_ENABLED - nrf_log_backend_rtt - Log RTT backend
 //==========================================================
 #ifndef NRF_LOG_BACKEND_RTT_ENABLED
-#define NRF_LOG_BACKEND_RTT_ENABLED 0
+#define NRF_LOG_BACKEND_RTT_ENABLED 1
 #endif
 // <o> NRF_LOG_BACKEND_RTT_TEMP_BUFFER_SIZE - Size of buffer for partially processed strings. 
 // <i> Size of the buffer is a trade-off between RAM usage and processing.
@@ -1466,7 +1717,7 @@
 // <e> NRF_LOG_BACKEND_UART_ENABLED - nrf_log_backend_uart - Log UART backend
 //==========================================================
 #ifndef NRF_LOG_BACKEND_UART_ENABLED
-#define NRF_LOG_BACKEND_UART_ENABLED 1
+#define NRF_LOG_BACKEND_UART_ENABLED 0
 #endif
 // <o> NRF_LOG_BACKEND_UART_TX_PIN - UART TX pin 
 #ifndef NRF_LOG_BACKEND_UART_TX_PIN
@@ -1564,7 +1815,7 @@
 // <16384=> 16384 
 
 #ifndef NRF_LOG_BUFSIZE
-#define NRF_LOG_BUFSIZE 1024
+#define NRF_LOG_BUFSIZE 4096
 #endif
 
 // <q> NRF_LOG_CLI_CMDS  - Enable CLI commands for the module.
@@ -1583,7 +1834,7 @@
 // <4=> Debug 
 
 #ifndef NRF_LOG_DEFAULT_LEVEL
-#define NRF_LOG_DEFAULT_LEVEL 3
+#define NRF_LOG_DEFAULT_LEVEL 4
 #endif
 
 // <q> NRF_LOG_DEFERRED  - Enable deffered logger.
@@ -1600,20 +1851,6 @@
 
 #ifndef NRF_LOG_FILTERS_ENABLED
 #define NRF_LOG_FILTERS_ENABLED 0
-#endif
-
-// <o> NRF_LOG_STR_PUSH_BUFFER_SIZE  - Size of the buffer dedicated for strings stored using @ref NRF_LOG_PUSH.
- 
-// <16=> 16 
-// <32=> 32 
-// <64=> 64 
-// <128=> 128 
-// <256=> 256 
-// <512=> 512 
-// <1024=> 1024 
-
-#ifndef NRF_LOG_STR_PUSH_BUFFER_SIZE
-#define NRF_LOG_STR_PUSH_BUFFER_SIZE 128
 #endif
 
 // <o> NRF_LOG_STR_PUSH_BUFFER_SIZE  - Size of the buffer dedicated for strings stored using @ref NRF_LOG_PUSH.
@@ -4401,7 +4638,7 @@
 // <i> or this value is actually used. It depends on which one is bigger.
 
 #ifndef SEGGER_RTT_CONFIG_BUFFER_SIZE_UP
-#define SEGGER_RTT_CONFIG_BUFFER_SIZE_UP 512
+#define SEGGER_RTT_CONFIG_BUFFER_SIZE_UP 4096
 #endif
 
 // <o> SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS - Maximum number of upstream buffers. 
@@ -4464,7 +4701,7 @@
 
 // <o> NRF_SDH_BLE_PERIPHERAL_LINK_COUNT - Maximum number of peripheral links. 
 #ifndef NRF_SDH_BLE_PERIPHERAL_LINK_COUNT
-#define NRF_SDH_BLE_PERIPHERAL_LINK_COUNT 1
+#define NRF_SDH_BLE_PERIPHERAL_LINK_COUNT 9
 #endif
 
 // <o> NRF_SDH_BLE_CENTRAL_LINK_COUNT - Maximum number of central links. 
@@ -4476,7 +4713,7 @@
 // <i> Maximum number of total concurrent connections using the default configuration.
 
 #ifndef NRF_SDH_BLE_TOTAL_LINK_COUNT
-#define NRF_SDH_BLE_TOTAL_LINK_COUNT 1
+#define NRF_SDH_BLE_TOTAL_LINK_COUNT 9
 #endif
 
 // <o> NRF_SDH_BLE_GAP_EVENT_LENGTH - GAP event length. 
@@ -4498,14 +4735,14 @@
 
 // <o> NRF_SDH_BLE_VS_UUID_COUNT - The number of vendor-specific UUIDs. 
 #ifndef NRF_SDH_BLE_VS_UUID_COUNT
-#define NRF_SDH_BLE_VS_UUID_COUNT 1
+#define NRF_SDH_BLE_VS_UUID_COUNT 2
 #endif
 
 // <q> NRF_SDH_BLE_SERVICE_CHANGED  - Include the Service Changed characteristic in the Attribute Table.
  
 
 #ifndef NRF_SDH_BLE_SERVICE_CHANGED
-#define NRF_SDH_BLE_SERVICE_CHANGED 1
+#define NRF_SDH_BLE_SERVICE_CHANGED 0
 #endif
 
 // </h> 
@@ -5185,152 +5422,6 @@
 
 // </h> 
 //==========================================================
-
-// <e> PWM_ENABLED - nrf_drv_pwm - PWM peripheral driver - legacy layer
-//==========================================================
-#ifndef PWM_ENABLED
-#define PWM_ENABLED 1
-#endif
-// <o> PWM_DEFAULT_CONFIG_OUT0_PIN - Out0 pin  <0-31>
-
-
-#ifndef PWM_DEFAULT_CONFIG_OUT0_PIN
-#define PWM_DEFAULT_CONFIG_OUT0_PIN 31
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_OUT1_PIN - Out1 pin  <0-31>
-
-
-#ifndef PWM_DEFAULT_CONFIG_OUT1_PIN
-#define PWM_DEFAULT_CONFIG_OUT1_PIN 31
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_OUT2_PIN - Out2 pin  <0-31>
-
-
-#ifndef PWM_DEFAULT_CONFIG_OUT2_PIN
-#define PWM_DEFAULT_CONFIG_OUT2_PIN 31
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_OUT3_PIN - Out3 pin  <0-31>
-
-
-#ifndef PWM_DEFAULT_CONFIG_OUT3_PIN
-#define PWM_DEFAULT_CONFIG_OUT3_PIN 31
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_BASE_CLOCK  - Base clock
-
-// <0=> 16 MHz
-// <1=> 8 MHz
-// <2=> 4 MHz
-// <3=> 2 MHz
-// <4=> 1 MHz
-// <5=> 500 kHz
-// <6=> 250 kHz
-// <7=> 125 kHz
-
-#ifndef PWM_DEFAULT_CONFIG_BASE_CLOCK
-#define PWM_DEFAULT_CONFIG_BASE_CLOCK 4
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_COUNT_MODE  - Count mode
-
-// <0=> Up
-// <1=> Up and Down
-
-#ifndef PWM_DEFAULT_CONFIG_COUNT_MODE
-#define PWM_DEFAULT_CONFIG_COUNT_MODE 0
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_TOP_VALUE - Top value
-#ifndef PWM_DEFAULT_CONFIG_TOP_VALUE
-#define PWM_DEFAULT_CONFIG_TOP_VALUE 1000
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_LOAD_MODE  - Load mode
-
-// <0=> Common
-// <1=> Grouped
-// <2=> Individual
-// <3=> Waveform
-
-#ifndef PWM_DEFAULT_CONFIG_LOAD_MODE
-#define PWM_DEFAULT_CONFIG_LOAD_MODE 2
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_STEP_MODE  - Step mode
-
-// <0=> Auto
-// <1=> Triggered
-
-#ifndef PWM_DEFAULT_CONFIG_STEP_MODE
-#define PWM_DEFAULT_CONFIG_STEP_MODE 0
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
-
-
-// <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
-// <0=> 0 (highest)
-// <1=> 1
-// <2=> 2
-// <3=> 3
-// <4=> 4
-// <5=> 5
-// <6=> 6
-// <7=> 7
-
-#ifndef PWM_DEFAULT_CONFIG_IRQ_PRIORITY
-#define PWM_DEFAULT_CONFIG_IRQ_PRIORITY 7
-#endif
-
-// <q> PWM0_ENABLED  - Enable PWM0 instance
-
-
-#ifndef PWM0_ENABLED
-#define PWM0_ENABLED 1
-#endif
-
-// <q> PWM1_ENABLED  - Enable PWM1 instance
-
-
-#ifndef PWM1_ENABLED
-#define PWM1_ENABLED 0
-#endif
-
-// <q> PWM2_ENABLED  - Enable PWM2 instance
-
-
-#ifndef PWM2_ENABLED
-#define PWM2_ENABLED 0
-#endif
-
-// <e> PWM_NRF52_ANOMALY_109_WORKAROUND_ENABLED - Enables nRF52 Anomaly 109 workaround for PWM.
-
-// <i> The workaround uses interrupts to wake up the CPU and ensure
-// <i> it is active when PWM is about to start a DMA transfer. For
-// <i> initial transfer, done when a playback is started via PPI,
-// <i> a specific EGU instance is used to generate the interrupt.
-// <i> During the playback, the PWM interrupt triggered on SEQEND
-// <i> event of a preceding sequence is used to protect the transfer
-// <i> done for the next sequence to be played.
-//==========================================================
-#ifndef PWM_NRF52_ANOMALY_109_WORKAROUND_ENABLED
-#define PWM_NRF52_ANOMALY_109_WORKAROUND_ENABLED 0
-#endif
-// <o> PWM_NRF52_ANOMALY_109_EGU_INSTANCE  - EGU instance used by the nRF52 Anomaly 109 workaround for PWM.
-
-// <0=> EGU0
-// <1=> EGU1
-// <2=> EGU2
-// <3=> EGU3
-// <4=> EGU4
-// <5=> EGU5
-
-#ifndef PWM_NRF52_ANOMALY_109_EGU_INSTANCE
-#define PWM_NRF52_ANOMALY_109_EGU_INSTANCE 5
-#endif
 
 // <<< end of configuration section >>>
 #endif //SDK_CONFIG_H
