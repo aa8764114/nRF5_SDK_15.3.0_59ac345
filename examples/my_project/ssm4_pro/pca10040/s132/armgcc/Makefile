@@ -49,8 +49,6 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
-  $(SDK_ROOT)/components/libraries/bsp/bsp.c \
-  $(SDK_ROOT)/components/libraries/bsp/bsp_btn_ble.c \
   $(PROJ_DIR)/app.c \
   $(SDK_ROOT)/components/libraries/bootloader/dfu/nrf_dfu_svci.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT.c \
@@ -101,20 +99,38 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble_ssm2/permission.c \
   $(SDK_ROOT)/components/ble_ssm2/security_layer.c \
   $(SDK_ROOT)/components/ble_ssm2/segment_layer.c \
-  $(SDK_ROOT)/components/ble_ssm2/session.c \
   $(SDK_ROOT)/components/ble_ssm2/user.c \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental/app_timer2.c \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental/drv_rtc.c \
-  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer.c \
-  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer_freertos.c \
-  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer_rtx.c \
+  $(SDK_ROOT)/components/ble_ssm2/session.c \
+  $(SDK_ROOT)/components/ssm4_libraries/base64.c \
+  $(SDK_ROOT)/components/ssm4_libraries/misc.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_rng.c \
+  $(SDK_ROOT)/components/libraries/queue/nrf_queue.c \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/bsp/bsp.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rng.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_ppi.c \
+  $(SDK_ROOT)/components/ssm4_libraries/ecdh_p256.s \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_init.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_ecc.c \
+  $(SDK_ROOT)/external/micro-ecc/micro-ecc/uECC.c \
+  $(SDK_ROOT)/external/micro-ecc/nrf52nf_armgcc/armgcc/micro_ecc_lib_nrf52.a \
 
+#  $(SDK_ROOT)/components/libraries/bsp/bsp.c \
+#  $(SDK_ROOT)/components/libraries/crypto/backend/cifra/cifra_backend_aes_aead.c \
+#  $(SDK_ROOT)/external/freertos/portable/CMSIS/nrf52/port_cmsis.c \
+#  $(SDK_ROOT)/external/freertos/portable/CMSIS/nrf52/port_cmsis_systick.c \
+#  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer.c \
+#  $(SDK_ROOT)/components/libraries/timer/experimental/drv_rtc.c \
+#  $(SDK_ROOT)/external/freertos/portable/GCC/nrf52/port.c \
+#  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer_rtx.c \
+#  $(SDK_ROOT)/components/ssm4_mod_libraries/timer/app_timer_freertos.c \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
 #  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
 #  $(SDK_ROOT)/components/libraries/timer/experimental/app_timer2.c \
-#  $(SDK_ROOT)/components/libraries/timer/experimental/drv_rtc.c \
+#  $(SDK_ROOT)/components/libraries/bsp/bsp_btn_ble.c \
 
 
 # Include folders common to all targets
@@ -137,7 +153,6 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/ble/peer_manager \
   $(SDK_ROOT)/components/libraries/ringbuf \
   $(SDK_ROOT)/modules/nrfx/hal \
-  $(SDK_ROOT)/components/libraries/bsp \
   $(SDK_ROOT)/external/segger_rtt \
   $(SDK_ROOT)/components/libraries/log \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt \
@@ -180,11 +195,21 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/sortlist \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer \
   $(SDK_ROOT)/components/ssm4_mod_libraries/timer/experimental \
+  $(SDK_ROOT)/components/libraries/crypto/backend/cifra \
+  $(SDK_ROOT)/external/freertos/source/include \
+  $(SDK_ROOT)/external/freertos/config \
+  $(SDK_ROOT)/external/freertos/portable/GCC/nrf52 \
+  $(SDK_ROOT)/external/freertos/portable/CMSIS/nrf52 \
+  $(SDK_ROOT)/components/libraries/queue \
+  $(SDK_ROOT)/components/ssm4_mod_libraries/bsp \
+  $(SDK_ROOT)/external/micro-ecc/nrf52nf_armgcc/armgcc \
+  $(SDK_ROOT)/external/micro-ecc/micro-ecc \
 
 
 #  $(SDK_ROOT)/components/libraries/timer \
 #  $(SDK_ROOT)/components/libraries/timer/experimental \
 #  $(SDK_ROOT)/components/ble/ble_services/ble_dfu \
+#  $(SDK_ROOT)/components/libraries/bsp \
 
 
 # Libraries common to all targets
@@ -213,12 +238,13 @@ CFLAGS += -DSOFTDEVICE_PRESENT
 CFLAGS += -DSWI_DISABLE0
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
-CFLAGS += -Wall -Werror
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin -fshort-enums
 CFLAGS += -DAPP_TIMER_V2_RTC1_ENABLED
+CFLAGS += -DAPP_TIMER_V2
+#CFLAGS += -Wall -Werror
 
 
 # C++ flags common to all targets

@@ -128,6 +128,7 @@ void app_timer_set_epoch_sec(uint32_t epoch_sec)
 {
     tick_offset = SEC_TO_TICK(epoch_sec) - drv_rtc_counter_get(&m_rtc_inst);
 }
+
 #endif
 
 /**
