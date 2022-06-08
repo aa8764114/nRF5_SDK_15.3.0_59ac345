@@ -114,7 +114,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_init.c \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_ecc.c \
   $(SDK_ROOT)/external/micro-ecc/micro-ecc/uECC.c \
-  $(SDK_ROOT)/external/micro-ecc/nrf52nf_armgcc/armgcc/micro_ecc_lib_nrf52.a \
+#  $(SDK_ROOT)/external/micro-ecc/nrf52nf_armgcc/armgcc/micro_ecc_lib_nrf52.a \
 
 #  $(SDK_ROOT)/components/libraries/bsp/bsp.c \
 #  $(SDK_ROOT)/components/libraries/crypto/backend/cifra/cifra_backend_aes_aead.c \
@@ -313,9 +313,9 @@ $(foreach target, $(TARGETS), $(call define_target, $(target)))
 
 # Flash the program
 flash: default
-#	@echo Flashing: $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex
-#	nrfjprog -f nrf52 --program $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex --sectorerase
-#	nrfjprog -f nrf52 --reset
+	@echo Flashing: $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex
+	nrfjprog -f nrf52 --program $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex --sectorerase
+	nrfjprog -f nrf52 --reset
 
 # Flash softdevice
 flash_softdevice:
@@ -326,6 +326,7 @@ flash_softdevice:
 erase:
 	nrfjprog -f nrf52 --eraseall
 
+all: erase flash_softdevice flash
 
 SDK_CONFIG_FILE := ../config/sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
