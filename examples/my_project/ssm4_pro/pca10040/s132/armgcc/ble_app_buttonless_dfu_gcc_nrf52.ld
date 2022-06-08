@@ -113,6 +113,7 @@ SECTIONS
     KEEP(*(SORT(.crypto_data*)))
     PROVIDE(__stop_crypto_data = .);
   } > FLASH
+
 } INSERT AFTER .text
 
 

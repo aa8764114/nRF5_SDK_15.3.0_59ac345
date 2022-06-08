@@ -314,8 +314,8 @@ $(foreach target, $(TARGETS), $(call define_target, $(target)))
 # Flash the program
 flash: default
 	@echo Flashing: $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex
-	nrfjprog -f nrf52 --program $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex --sectorerase
-	nrfjprog -f nrf52 --reset
+#	nrfjprog -f nrf52 --program $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex --sectorerase
+#	nrfjprog -f nrf52 --reset
 
 # Flash softdevice
 flash_softdevice:
@@ -327,6 +327,16 @@ erase:
 	nrfjprog -f nrf52 --eraseall
 
 all: erase flash_softdevice flash
+
+gen_all: default
+	./gen_all.sh
+
+gen_zip: default
+	./gen_zip.sh
+
+gen_all&zip:default
+	./gen_all.sh
+	./gen_zip.sh
 
 SDK_CONFIG_FILE := ../config/sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
